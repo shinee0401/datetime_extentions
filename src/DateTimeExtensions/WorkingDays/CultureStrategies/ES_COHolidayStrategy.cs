@@ -1,8 +1,8 @@
 ﻿#region License
 
-// 
+//
 // Copyright (c) 2011-2012, João Matos Silva <kappy@acydburne.com.pt>
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -14,7 +14,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-// 
+//
 
 #endregion
 
@@ -25,145 +25,102 @@ using System.Linq;
 
 namespace DateTimeExtensions.WorkingDays.CultureStrategies
 {
+    using OccurrencesCalculators;
+
     [Locale("es-CO")]
     public class ES_COHolidayStrategy : HolidayStrategyBase, IHolidayStrategy
     {
-        private static Holiday[] fixedDayHolidays =
-            new Holiday[]
-            {
-                GlobalHolidays.NewYear,
-                GlobalHolidays.InternationalWorkersDay,
-                IndependenceDay,
-                BoyacaBattle,
-                ChristianHolidays.ImaculateConception,
-                ChristianHolidays.Christmas,
 
-                ChristianHolidays.PalmSunday,
-                ChristianHolidays.MaundyThursday,
-                ChristianHolidays.GoodFriday,
-                ChristianHolidays.Easter,
-                Ascension,
-                CorpusChristi,
-                SacredHeart,
-            };
-
-        private static Holiday[] nextMondayHolidays =
-            new Holiday[]
-            {
-                new FixedHoliday("Epiphany", new DayInYear(1, 6)),
-                new FixedHoliday("Saint Joseph", new DayInYear(3, 19)),
-                new FixedHoliday("Saint Peter and saint Paul", new DayInYear(6, 29)),
-                new FixedHoliday("Virgin Assumption",          new DayInYear(8, 15)),
-                new FixedHoliday("Race day",        new DayInYear(10, 12)),
-                new FixedHoliday("All saints' day", new DayInYear(11, 1)),
-                new FixedHoliday("Independence of Cartagena", new DayInYear(11, 11))
-            };
 
         public ES_COHolidayStrategy()
         {
-            var all = fixedDayHolidays.Concat(nextMondayHolidays);
-            foreach (var h in all)
+            foreach (var celebratedInSameDayHoliday in CelebratedInSameDayHolidays)
             {
-                this.InnerHolidays.Add(h);
+                InnerCalendarDays.Add(celebratedInSameDayHoliday);
+            }
+
+            foreach (var observedOnNextMondayHoliday in ObservedOnNextMondayHolidays)
+            {
+                InnerCalendarDays.Add(observedOnNextMondayHoliday);
             }
         }
 
-        protected override IDictionary<DateTime, Holiday> BuildObservancesMap(int year)
+        protected override IEnumerable<KeyValuePair<DateTime, CalendarDay>> GetYearObservances(int year)
         {
-            IDictionary<DateTime, Holiday> holidayMap = new Dictionary<DateTime, Holiday>();
-            foreach (var innerHoliday in fixedDayHolidays)
+            foreach (var celebratedInSameDayHoliday in CelebratedInSameDayHolidays)
             {
-                var date = innerHoliday.GetInstance(year);
-                if (date.HasValue)
+                var day = celebratedInSameDayHoliday.Day.GetInstance(year);
+                if (day != null)
                 {
-                    holidayMap.Add(date.Value, innerHoliday);
+                    yield return new KeyValuePair<DateTime, CalendarDay>(day.Value, celebratedInSameDayHoliday);
                 }
             }
 
-            foreach (var h in nextMondayHolidays)
+            foreach (var observedOnNextMondayHoliday in ObservedOnNextMondayHolidays)
             {
-                var date = h.GetInstance(year);
-                if (date.HasValue)
+                var day = observedOnNextMondayHoliday.Day.GetInstance(year);
+                if (day == null)
                 {
-                    var d = (date.Value.DayOfWeek == DayOfWeek.Monday)
-                                ? date.Value
-                                : date.Value.NextDayOfWeek(DayOfWeek.Monday);
-
-                    holidayMap[d] = h;
+                    continue;
                 }
-            }
 
-            return holidayMap;
-        }
-
-        private static Holiday independenceDay;
-
-        public static Holiday IndependenceDay
-        {
-            get
-            {
-                if (independenceDay == null)
+                if (day.Value.DayOfWeek == DayOfWeek.Monday)
                 {
-                    independenceDay = new FixedHoliday("Independence Day", 7, 20);
+                    yield return new KeyValuePair<DateTime, CalendarDay>(day.Value, observedOnNextMondayHoliday);
                 }
-                return independenceDay;
+
+                var observedHoliday = new Holiday(
+                    new NamedDay(
+                        observedOnNextMondayHoliday.Day.Name,
+                        new NthDayOfWeekAfterDayStrategy(1, DayOfWeek.Monday, new NamedDayStrategy(observedOnNextMondayHoliday.Day))));
+                var observedDate = observedHoliday.Day.GetInstance(year);
+                if (observedDate != null)
+                {
+                    yield return new KeyValuePair<DateTime, CalendarDay>(observedDate.Value, observedHoliday);
+                }
             }
         }
 
-        private static Holiday boyacaBattle;
+        public static NamedDayInitializer CartagenaIndependenceDay { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Cartagena Independence Day", new FixedDayStrategy(Month.November, 11)));
 
-        public static Holiday BoyacaBattle
-        {
-            get
+        public static NamedDayInitializer RaceDay { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Race Day", new FixedDayStrategy(Month.October, 12)));
+
+        public static NamedDayInitializer IndependenceDay { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Independence Day", new FixedDayStrategy(Month.July, 20)));
+
+        public static NamedDayInitializer BoyacaBattle { get; } = new NamedDayInitializer(() =>
+            new NamedDay("BoyacaBattle", new FixedDayStrategy(Month.August, 7)));
+
+        private static readonly IEnumerable<Holiday> CelebratedInSameDayHolidays =
+            new Holiday[]
             {
-                if (boyacaBattle == null)
-                {
-                    boyacaBattle = new FixedHoliday("Boyaca battle", 8, 7);
-                }
-                return boyacaBattle;
-            }
-        }
+                new Holiday(GlobalHolidays.NewYear),
+                new Holiday(GlobalHolidays.InternationalWorkersDay),
+                new Holiday(IndependenceDay),
+                new Holiday(BoyacaBattle),
+                new Holiday(ChristianHolidays.ImaculateConception),
+                new Holiday(ChristianHolidays.Christmas),
+                new Holiday(ChristianHolidays.PalmSunday),
+                new Holiday(ChristianHolidays.MaundyThursday),
+                new Holiday(ChristianHolidays.GoodFriday),
+                new Holiday(ChristianHolidays.Easter),
+            };
 
-        private static Holiday ascension;
-
-        public static Holiday Ascension
-        {
-            get
+        private static readonly IEnumerable<Holiday> ObservedOnNextMondayHolidays =
+            new Holiday[]
             {
-                if (ascension == null)
-                {
-                    ascension = new EasterBasedHoliday("Ascension", 43);
-                }
-                return ascension;
-            }
-        }
-
-        private static Holiday corpusChristi;
-
-        public static Holiday CorpusChristi
-        {
-            get
-            {
-                if (corpusChristi == null)
-                {
-                    corpusChristi = new EasterBasedHoliday("CorpusChristi", 64);
-                }
-                return corpusChristi;
-            }
-        }
-
-        private static Holiday sacredHeartDay;
-
-        public static Holiday SacredHeart
-        {
-            get
-            {
-                if (sacredHeartDay == null)
-                {
-                    sacredHeartDay = new EasterBasedHoliday("CorpusChristi", 71);
-                }
-                return sacredHeartDay;
-            }
-        }
+                new Holiday(ChristianHolidays.Epiphany),
+                new Holiday(ChristianHolidays.StJoseph),
+                new Holiday(ChristianHolidays.StPeterStPaul),
+                new Holiday(ChristianHolidays.Assumption),
+                new Holiday(RaceDay),
+                new Holiday(ChristianHolidays.AllSaints),
+                new Holiday(CartagenaIndependenceDay),
+                new Holiday(ChristianHolidays.Ascension),
+                new Holiday(ChristianHolidays.CorpusChristi),
+                new Holiday(ChristianHolidays.SacredHeart),
+            };
     }
 }

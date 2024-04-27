@@ -19,10 +19,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
+using DateTimeExtensions.WorkingDays.OccurrencesCalculators;
 
 namespace DateTimeExtensions.WorkingDays
 {
@@ -30,100 +28,34 @@ namespace DateTimeExtensions.WorkingDays
     {
         private static readonly Calendar HebrewCalendar = new HebrewCalendar();
 
-        private static Holiday roshHashanah;
+        public static NamedDayInitializer RoshHashanah { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Rosh Hashanah", new FixedDayStrategy(1, 1, HebrewCalendar)));
+        
+        public static NamedDayInitializer RoshHashanahSecondDay { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Rosh Hashanah", new FixedDayStrategy(1, 2, HebrewCalendar)));
 
-        public static Holiday RoshHashanah
-        {
-            get
-            {
-                return roshHashanah ??
-                       (roshHashanah = new FixedHoliday("Rosh Hashanah", new DayInYear(1, 1, HebrewCalendar)));
-            }
-        }
+        public static NamedDayInitializer YomKippur { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Yom Kippur", new FixedDayStrategy(1, 10, HebrewCalendar)));
 
-        private static Holiday roshHashanahSecondDay;
+        public static NamedDayInitializer Sukkot { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Sukkot", new FixedDayStrategy(1, 15, HebrewCalendar)));
 
-        public static Holiday RoshHashanahSecondDay
-        {
-            get
-            {
-                return roshHashanahSecondDay ??
-                       (roshHashanahSecondDay = new FixedHoliday("Rosh Hashanah", new DayInYear(1, 2, HebrewCalendar)));
-            }
-        }
+        public static NamedDayInitializer ShminiAtzeret { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Shmini Atzeret", new FixedDayStrategy(1, 22, HebrewCalendar)));
 
-        private static Holiday yomKippur;
+        public static NamedDayInitializer ShminiTorah { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Shmini Torah", new FixedDayStrategy(1, 23, HebrewCalendar)));
+        
+        public static NamedDayInitializer Pesach { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Pesach", new FixedDayStrategy(7, 15, HebrewCalendar)));
 
-        public static Holiday YomKippur
-        {
-            get
-            {
-                return yomKippur ?? (yomKippur = new FixedHoliday("Yom Kippur", new DayInYear(1, 10, HebrewCalendar)));
-            }
-        }
+        public static NamedDayInitializer ShviiShelPesach { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Shvi'i shel Pesach", new FixedDayStrategy(7, 21, HebrewCalendar)));
 
-        private static Holiday sukkot;
-
-        public static Holiday Sukkot
-        {
-            get { return sukkot ?? (sukkot = new FixedHoliday("Sukkot", new DayInYear(1, 15, HebrewCalendar))); }
-        }
-
-        private static Holiday shminiAtzeret;
-
-        public static Holiday ShminiAtzeret
-        {
-            get
-            {
-                return shminiAtzeret ??
-                       (shminiAtzeret = new FixedHoliday("Shmini Atzeret", new DayInYear(1, 22, HebrewCalendar)));
-            }
-        }
-
-        private static Holiday shminiTorah;
-
-        public static Holiday ShminiTorah
-        {
-            get
-            {
-                return shminiTorah ??
-                       (shminiTorah = new FixedHoliday("Shmini Torah", new DayInYear(1, 23, HebrewCalendar)));
-            }
-        }
-
-        private static Holiday pesach;
-
-        public static Holiday Pesach
-        {
-            get { return pesach ?? (pesach = new FixedHoliday("Pesach", new DayInYear(7, 15, HebrewCalendar))); }
-        }
-
-        private static Holiday shviiShelPesach;
-
-        public static Holiday ShviiShelPesach
-        {
-            get
-            {
-                return shviiShelPesach ??
-                       (shviiShelPesach = new FixedHoliday("Shvi'i shel Pesach", new DayInYear(7, 21, HebrewCalendar)));
-            }
-        }
-
-        private static Holiday shavuot;
-
-        public static Holiday Shavuot
-        {
-            get { return shavuot ?? (shavuot = new FixedHoliday("Shavuot", new DayInYear(9, 6, HebrewCalendar))); }
-        }
-
-        private static Holiday tuBishvat;
-
-        public static Holiday TuBishvat
-        {
-            get
-            {
-                return tuBishvat ?? (tuBishvat = new FixedHoliday("Tu Bishvat", new DayInYear(5, 15, HebrewCalendar)));
-            }
-        }
+        public static NamedDayInitializer Shavuot { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Shavuot", new FixedDayStrategy(9, 6, HebrewCalendar)));
+        
+        public static NamedDayInitializer TuBishvat { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Tu Bishvat", new FixedDayStrategy(5, 15, HebrewCalendar)));
     }
 }

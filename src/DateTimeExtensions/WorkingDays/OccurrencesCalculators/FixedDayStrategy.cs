@@ -1,8 +1,8 @@
 ﻿#region License
 
-// 
+//
 // Copyright (c) 2011-2012, João Matos Silva <kappy@acydburne.com.pt>
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -14,46 +14,45 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-// 
+//
 
 #endregion
 
 using System;
 using System.Globalization;
 
-namespace DateTimeExtensions.WorkingDays
+namespace DateTimeExtensions.WorkingDays.OccurrencesCalculators
 {
-    public class FixedHoliday : Holiday
+    public class FixedDayStrategy : ICalculateDayStrategy
     {
         private readonly Func<int, DateTime?> holidayResolver;
 
-        public FixedHoliday(string name, Func<int, DateTime?> holidayResolver)
-            : base(name)
+        public FixedDayStrategy(Func<int, DateTime?> holidayResolver)
         {
-            this.holidayResolver = holidayResolver;
+            this.holidayResolver = holidayResolver ?? throw new ArgumentNullException(nameof(holidayResolver));
         }
 
-        public FixedHoliday(string name, DayInYear day)
-            : this(name, year => day.GetDayOnYear(year))
-        {
-        }
-
-        public FixedHoliday(string name, int month, int day, Calendar calendar)
-            : this(name, year => new DayInYear(month, day, calendar).GetDayOnYear(year))
+        public FixedDayStrategy(DayInYear day)
+            : this(year => day.GetDayOnYear(year))
         {
         }
 
-        public FixedHoliday(string name, int month, int day)
-            : this(name, month, day, new GregorianCalendar())
+        public FixedDayStrategy(int month, int day, Calendar calendar)
+            : this(year => new DayInYear(month, day, calendar).GetDayOnYear(year))
         {
         }
 
-        public override DateTime? GetInstance(int year)
+        public FixedDayStrategy(int month, int day)
+            : this(month, day, new GregorianCalendar())
+        {
+        }
+
+        public DateTime? GetInstance(int year)
         {
             return holidayResolver(year);
         }
 
-        public override bool IsInstanceOf(DateTime date)
+        public bool IsInstanceOf(DateTime date)
         {
             var holidayDate = this.holidayResolver(date.Year);
             return holidayDate != null && holidayDate.Value.Date == date.Date;

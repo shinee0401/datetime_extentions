@@ -1,8 +1,8 @@
 ﻿#region License
 
-// 
+//
 // Copyright (c) 2011-2012, João Matos Silva <kappy@acydburne.com.pt>
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -14,283 +14,203 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-// 
+//
 
 #endregion
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using DateTimeExtensions.Common;
+using DateTimeExtensions.WorkingDays.OccurrencesCalculators;
 
 namespace DateTimeExtensions.WorkingDays.CultureStrategies
 {
     [Locale("es-AR")]
     public class ES_ARHolidayStrategy : HolidayStrategyBase, IHolidayStrategy
     {
-        private static readonly IEnumerable<Holiday> TuristicHolidays =
-            new Holiday[]
-            {
-                GlobalHolidays.NewYear, 
-                //The day before the carnival is an holiday also but since Carnival is allways a tuesday,
-                //it can be included on the Turistic holiday bridge policy
-                ChristianHolidays.Carnival,
-                DayOfRemembrenceForTruthAndJustice,
-                DayOfTheVeterans,
-                GlobalHolidays.InternationalWorkersDay,
-                DayOfTheFirstNationalGovernment,
-                NationalFlagDay,
-                IndependenceDay,
-                ChristianHolidays.ImaculateConception,
-                //TODO: only half day. should it be included?
-                //this.InnerHolidays.Add(ChristianHolidays.ChristmasEve);
-                ChristianHolidays.Christmas,
-                //TODO: only half day. should it be included?
-                //this.InnerHolidays.Add(GlobalHolidays.NewYearsEve);
-            };
-
         public ES_ARHolidayStrategy()
         {
+            foreach (var holiday in TuristicHolidays)
+            {
+                this.InnerCalendarDays.Add(holiday);
+            }
+            foreach (var holiday in MoveableHolidays)
+            {
+                this.InnerCalendarDays.Add(holiday);
+            }
+            foreach (var holiday in NormalHolidays)
+            {
+                this.InnerCalendarDays.Add(holiday);
+            }
+        }
+
+        protected override IEnumerable<KeyValuePair<DateTime, CalendarDay>> GetYearObservances(int year)
+        {
+            foreach (var turisticHoliday in BuildTuristicObservanceMap(year))
+            {
+                yield return turisticHoliday;
+            }
+            foreach (var moveableHoliday in BuildMoveableObservanceMap(year))
+            {
+                yield return moveableHoliday;
+            }
+            foreach (var normalHoliday in BuildNormalObservanceMap(year))
+            {
+                yield return normalHoliday;
+            }
+        }
+
+        private IEnumerable<KeyValuePair<DateTime, CalendarDay>> BuildNormalObservanceMap(int year)
+        {
+            foreach (var holiday in NormalHolidays)
+            {
+                var date = holiday.Day.GetInstance(year);
+                if (date == null)
+                {
+                    continue;
+                }
+
+                yield return new KeyValuePair<DateTime, CalendarDay>(
+                    date.Value,
+                    holiday);
+            }
+        }
+
+        private IEnumerable<KeyValuePair<DateTime, CalendarDay>> BuildTuristicObservanceMap(int year)
+        {
             foreach (var turisticHoliday in TuristicHolidays)
             {
-                this.InnerHolidays.Add(turisticHoliday);
-            }
-            this.InnerHolidays.Add(ChristianHolidays.MaundyThursday);
-            this.InnerHolidays.Add(ChristianHolidays.GoodFriday);
-            this.InnerHolidays.Add(AnniversaryOfDeathGeneralJoseSanMartin);
-            this.InnerHolidays.Add(DayOfRespectForCulturalDiversity);
-            this.InnerHolidays.Add(DayOfNationalSovereignity);
-        }
+                var date = turisticHoliday.Day.GetInstance(year);
+                if (date == null)
+                {
+                    continue;
+                }
 
-        protected override IDictionary<DateTime, Holiday> BuildObservancesMap(int year)
-        {
-            var observancesMap = new Dictionary<DateTime, Holiday>();
-            this.BuildMoveableObservanceMap(year, DayOfRespectForCulturalDiversity, observancesMap);
-            this.BuildMoveableObservanceMap(year, DayOfNationalSovereignity, observancesMap);
-            foreach (var turisticHoliday in TuristicHolidays)
-            {
-                this.BuildTuristicObservanceMap(year, turisticHoliday, observancesMap);
-            }
-            this.BuildNormalObservanceMap(year, ChristianHolidays.MaundyThursday, observancesMap);
-            this.BuildNormalObservanceMap(year, ChristianHolidays.GoodFriday, observancesMap);
-            this.BuildNormalObservanceMap(year, AnniversaryOfDeathGeneralJoseSanMartin, observancesMap);
-            return observancesMap;
-        }
+                yield return new KeyValuePair<DateTime, CalendarDay>(
+                    date.Value,
+                    turisticHoliday);
 
-        private void BuildNormalObservanceMap(int year, Holiday holiday, Dictionary<DateTime, Holiday> map)
-        {
-            var holidayInstance = holiday.GetInstance(year);
-            if (!holidayInstance.HasValue)
-            {
-                return;
-            }
-            map.AddIfInexistent(holidayInstance.Value, DayOfRespectForCulturalDiversity);
-        }
-
-        private void BuildTuristicObservanceMap(int year, Holiday holiday, Dictionary<DateTime, Holiday> map)
-        {
-            var holidayInstance = holiday.GetInstance(year);
-            if (!holidayInstance.HasValue)
-            {
-                return;
-            }
-            map.AddIfInexistent(holidayInstance.Value, DayOfRespectForCulturalDiversity);
-            //if holiday falls on tuesday, the holiday is also observed on the last monday
-            if (holidayInstance.Value.DayOfWeek == DayOfWeek.Tuesday)
-            {
-                map.AddIfInexistent(holidayInstance.Value.LastDayOfWeek(DayOfWeek.Monday), holiday);
-            }
-            //if holiday falls on thursday, the holiday is also observed on the next friday
-            if (holidayInstance.Value.DayOfWeek == DayOfWeek.Thursday)
-            {
-                map.AddIfInexistent(holidayInstance.Value.NextDayOfWeek(DayOfWeek.Friday), holiday);
+                //if holiday falls on tuesday, the holiday is also observed on the last monday
+                if (date.Value.DayOfWeek == DayOfWeek.Tuesday)
+                {
+                    yield return new KeyValuePair<DateTime, CalendarDay>(
+                        date.Value.LastDayOfWeek(DayOfWeek.Monday),
+                        turisticHoliday);
+                }
+                //if holiday falls on thursday, the holiday is also observed on the next friday
+                if (date.Value.DayOfWeek == DayOfWeek.Thursday)
+                {
+                    yield return new KeyValuePair<DateTime, CalendarDay>(
+                        date.Value.NextDayOfWeek(DayOfWeek.Friday),
+                        turisticHoliday);
+                }
             }
         }
 
-        private void BuildMoveableObservanceMap(int year, Holiday holiday, Dictionary<DateTime, Holiday> map)
+        private IEnumerable<KeyValuePair<DateTime, CalendarDay>> BuildMoveableObservanceMap(int year)
         {
-            var holidayInstance = holiday.GetInstance(year);
-            if (!holidayInstance.HasValue)
+            foreach (var moveableHoliday in MoveableHolidays)
             {
-                return;
-            }
-            switch (holidayInstance.Value.DayOfWeek)
-            {
-                case DayOfWeek.Monday:
-                    map.AddIfInexistent(holidayInstance.Value, DayOfRespectForCulturalDiversity);
-                    break;
+                var date = moveableHoliday.Day.GetInstance(year);
+                if (date == null)
+                {
+                    continue;
+                }
+
+                switch (date.Value.DayOfWeek)
+                {
+                    case DayOfWeek.Monday:
+                        yield return new KeyValuePair<DateTime, CalendarDay>(
+                            date.Value,
+                            moveableHoliday);
+                        break;
                     //if holiday falls on tuesday or wednesday, the holiday is observed on the last monday
-                case DayOfWeek.Tuesday:
-                case DayOfWeek.Wednesday:
-                    map.AddIfInexistent(holidayInstance.Value.LastDayOfWeek(DayOfWeek.Monday), holiday);
-                    break;
+                    case DayOfWeek.Tuesday:
+                    case DayOfWeek.Wednesday:
+                        yield return new KeyValuePair<DateTime, CalendarDay>(
+                            date.Value.LastDayOfWeek(DayOfWeek.Monday),
+                            moveableHoliday);
+                        break;
                     //if holiday falls on thu, fri, sat, sun, the holiday is observed on the next monday
-                default:
-                    map.AddIfInexistent(holidayInstance.Value.NextDayOfWeek(DayOfWeek.Monday), holiday);
-                    break;
+                    default:
+                        yield return new KeyValuePair<DateTime, CalendarDay>(
+                            date.Value.NextDayOfWeek(DayOfWeek.Monday),
+                            moveableHoliday);
+                        break;
+                }
             }
-        }
-
-        private bool IsNormalHoliday(DateTime day)
-        {
-            if (ChristianHolidays.MaundyThursday.IsInstanceOf(day))
-            {
-                return true;
-            }
-            if (ChristianHolidays.GoodFriday.IsInstanceOf(day))
-            {
-                return true;
-            }
-            if (AnniversaryOfDeathGeneralJoseSanMartin.IsInstanceOf(day))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        private bool IsTuristicHoliday(DateTime day)
-        {
-            return TuristicHolidays.Any(h => h.IsInstanceOf(day));
-        }
-
-        private bool IsMoveableHoliday(DateTime day)
-        {
-            if (DayOfRespectForCulturalDiversity.IsInstanceOf(day))
-            {
-                return true;
-            }
-            if (DayOfNationalSovereignity.IsInstanceOf(day))
-            {
-                return true;
-            }
-            return false;
         }
 
         //24 March - Day of Remembrance for Truth and Justice
-        private static Holiday dayOfRemembrenceForTruthAndJustice;
-
-        public static Holiday DayOfRemembrenceForTruthAndJustice
-        {
-            get
-            {
-                if (dayOfRemembrenceForTruthAndJustice == null)
-                {
-                    dayOfRemembrenceForTruthAndJustice = new FixedHoliday("Day of Remembrance for Truth and Justice", 3,
-                        24);
-                }
-                return dayOfRemembrenceForTruthAndJustice;
-            }
-        }
+        public static NamedDayInitializer DayOfRemembrenceForTruthAndJustice { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Day of Remembrance for Truth and Justice", new FixedDayStrategy(Month.March, 24)));
 
         //2 April - Day of The Veterans
-        private static Holiday dayOfTheVeterans;
-
-        public static Holiday DayOfTheVeterans
-        {
-            get
-            {
-                if (dayOfTheVeterans == null)
-                {
-                    dayOfTheVeterans = new FixedHoliday("Day of The Veterans", 4, 2);
-                }
-                return dayOfTheVeterans;
-            }
-        }
+        public static NamedDayInitializer DayOfTheVeterans { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Day of The Veterans", new FixedDayStrategy(Month.April, 2)));
 
         //25 May - Day of the First National Government
-        private static Holiday dayOfTheFirstNationalGovernment;
+        public static NamedDayInitializer DayOfTheFirstNationalGovernment { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Day of the First National Government", new FixedDayStrategy(Month.May, 25)));
 
-        public static Holiday DayOfTheFirstNationalGovernment
-        {
-            get
-            {
-                if (dayOfTheFirstNationalGovernment == null)
-                {
-                    dayOfTheFirstNationalGovernment = new FixedHoliday("Day of the First National Government", 5, 25);
-                }
-                return dayOfTheFirstNationalGovernment;
-            }
-        }
 
-        //20 June - National Flag Day 
-        private static Holiday nationalFlagDay;
-
-        public static Holiday NationalFlagDay
-        {
-            get
-            {
-                if (nationalFlagDay == null)
-                {
-                    nationalFlagDay = new FixedHoliday("National Flag Day", 6, 20);
-                }
-                return nationalFlagDay;
-            }
-        }
+        //20 June - National Flag Day
+        public static NamedDayInitializer NationalFlagDay { get; } = new NamedDayInitializer(() =>
+            new NamedDay("National Flag Day", new FixedDayStrategy(Month.June, 20)));
 
         //9 July - Independence Day
-        private static Holiday independenceDay;
-
-        public static Holiday IndependenceDay
-        {
-            get
-            {
-                if (independenceDay == null)
-                {
-                    independenceDay = new FixedHoliday("Independence Day", 7, 9);
-                }
-                return independenceDay;
-            }
-        }
+        public static NamedDayInitializer IndependenceDay { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Independence Day", new FixedDayStrategy(Month.July, 9)));
 
         //3rd Monday Of August - Anniversary Of Death of General José San Martin
-        private static Holiday anniversaryOfDeathGeneralJoseSanMartin;
-
-        public static Holiday AnniversaryOfDeathGeneralJoseSanMartin
-        {
-            get
-            {
-                if (anniversaryOfDeathGeneralJoseSanMartin == null)
-                {
-                    anniversaryOfDeathGeneralJoseSanMartin =
-                        new NthDayOfWeekInMonthHoliday("Anniversary Of Death of General José San Martin", 3,
-                            DayOfWeek.Monday, 8, CountDirection.FromFirst);
-                }
-                return anniversaryOfDeathGeneralJoseSanMartin;
-            }
-        }
+        public static NamedDayInitializer AnniversaryOfDeathGeneralJoseSanMartin { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Anniversary Of Death of General José San Martin",
+                new NthDayOfWeekInMonthDayStrategy(3, DayOfWeek.Monday, Month.July, CountDirection.FromFirst)));
 
         //second Monday of October - Day of Respect for Cultural Diversity
-        private static Holiday dayOfRespectForCulturalDiversity;
-
-        public static Holiday DayOfRespectForCulturalDiversity
-        {
-            get
-            {
-                if (dayOfRespectForCulturalDiversity == null)
-                {
-                    dayOfRespectForCulturalDiversity =
-                        new NthDayOfWeekInMonthHoliday("Day of Respect for Cultural Diversity", 2, DayOfWeek.Monday, 10,
-                            CountDirection.FromFirst);
-                }
-                return dayOfRespectForCulturalDiversity;
-            }
-        }
+        public static NamedDayInitializer DayOfRespectForCulturalDiversity { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Day of Respect for Cultural Diversity",
+                new NthDayOfWeekInMonthDayStrategy(2, DayOfWeek.Monday, Month.October, CountDirection.FromFirst)));
 
         //fourth monday of November - Day of National Sovereignty
-        private static Holiday dayOfNationalSovereignity;
+        public static NamedDayInitializer DayOfNationalSovereignity { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Day of National Sovereignty",
+                new NthDayOfWeekInMonthDayStrategy(4, DayOfWeek.Monday, Month.November, CountDirection.FromFirst)));
 
-        public static Holiday DayOfNationalSovereignity
-        {
-            get
+        private static readonly IEnumerable<Holiday> TuristicHolidays =
+            new Holiday[]
             {
-                if (dayOfNationalSovereignity == null)
-                {
-                    dayOfNationalSovereignity = new NthDayOfWeekInMonthHoliday("Day of National Sovereignty", 4,
-                        DayOfWeek.Monday, 11, CountDirection.FromFirst);
-                }
-                return dayOfNationalSovereignity;
-            }
-        }
+                new Holiday(GlobalHolidays.NewYear),
+                //The day before the carnival is an holiday also but since Carnival is always a tuesday,
+                //it can be included on the Turistic holiday bridge policy
+                new Holiday(ChristianHolidays.Carnival),
+                new Holiday(DayOfRemembrenceForTruthAndJustice),
+                new Holiday(DayOfTheVeterans),
+                new Holiday(GlobalHolidays.InternationalWorkersDay),
+                new Holiday(DayOfTheFirstNationalGovernment),
+                new Holiday(NationalFlagDay),
+                new Holiday(IndependenceDay),
+                new Holiday(ChristianHolidays.ImaculateConception),
+                //TODO: only half day. should it be included?
+                //this.InnerHolidays.Add(new Holiday(ChristianHolidays.ChristmasEve));
+                new Holiday(ChristianHolidays.Christmas),
+                //TODO: only half day. should it be included?
+                //this.InnerHolidays.Add(new Holiday(GlobalHolidays.NewYearsEve));
+            };
+
+        private static readonly IEnumerable<Holiday> MoveableHolidays =
+            new Holiday[]
+            {
+                new Holiday(DayOfRespectForCulturalDiversity),
+                new Holiday(DayOfNationalSovereignity)
+            };
+
+        private static readonly IEnumerable<Holiday> NormalHolidays =
+            new Holiday[]
+            {
+                new Holiday(ChristianHolidays.MaundyThursday),
+                new Holiday(ChristianHolidays.GoodFriday),
+                new Holiday(AnniversaryOfDeathGeneralJoseSanMartin)
+            };
     }
 }
