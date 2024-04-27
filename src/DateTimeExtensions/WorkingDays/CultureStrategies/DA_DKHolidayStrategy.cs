@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 
 // 
 // Copyright (c) 2011-2012, João Matos Silva <kappy@acydburne.com.pt>
@@ -50,5 +50,20 @@ namespace DateTimeExtensions.WorkingDays.CultureStrategies
         //is a Danish holiday celebrated on the 4th Friday after Easter
         public static NamedDayInitializer GeneralPrayerDay { get; } = new NamedDayInitializer(() =>
             new NamedDay("General Prayer Day", new NthDayOfWeekAfterDayStrategy(4, DayOfWeek.Friday, EasterDayStrategy.Instance)));
+        //NB: On 28 February 2023, the Danish Parliament voted to abolish Store Bededag, effective from 2024. See wiki link above.
+        private static Holiday generalPrayerDay;
+
+        public static Holiday GeneralPrayerDay
+        {
+            get
+            {
+                if (generalPrayerDay == null)
+                {
+                    generalPrayerDay = new YearDependantHoliday(year => year < 2024, new NthDayOfWeekAfterDayHoliday("General Prayer Day", 4, DayOfWeek.Friday,
+                        ChristianHolidays.Easter));
+                }
+                return generalPrayerDay;
+            }
+        }
     }
 }

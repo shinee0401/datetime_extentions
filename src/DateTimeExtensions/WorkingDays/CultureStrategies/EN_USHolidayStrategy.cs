@@ -43,6 +43,18 @@ namespace DateTimeExtensions.WorkingDays.CultureStrategies
             this.InnerCalendarDays.Add(new Holiday(LaborDay));
             this.InnerCalendarDays.Add(new Holiday(ColumbusDay));
             this.InnerCalendarDays.Add(new Holiday(ThanksgivingDay));
+            this.InnerHolidays.Add(GlobalHolidays.NewYear);
+            this.InnerHolidays.Add(ChristianHolidays.Christmas);
+            this.InnerHolidays.Add(NewYearsEve);
+            this.InnerHolidays.Add(IndependenceDay);
+            this.InnerHolidays.Add(GlobalHolidays.VeteransDay);
+            this.InnerHolidays.Add(MartinLutherKing);
+            this.InnerHolidays.Add(WashingtonsBirthday);
+            this.InnerHolidays.Add(MemorialDay);
+            this.InnerHolidays.Add(LaborDay);
+            this.InnerHolidays.Add(ColumbusDay);
+            this.InnerHolidays.Add(ThanksgivingDay);
+            this.InnerHolidays.Add(Juneteenth);
         }
 
         protected override IEnumerable<KeyValuePair<DateTime, CalendarDay>> GetYearObservances(int year)
@@ -57,6 +69,32 @@ namespace DateTimeExtensions.WorkingDays.CultureStrategies
                 
                 //if the holiday is a saturday, the holiday is observed on previous friday
                 switch (date.Value.DayOfWeek)
+            }
+            return holidayMap;
+        }
+        
+        //Juneteenth - new as of 2021
+        private static Holiday juneteenth;
+        
+        public static Holiday Juneteenth
+        {
+            get
+            {
+                if (juneteenth == null)
+                {
+                    juneteenth = new YearDependantHoliday(year => year >= 2021, new FixedHoliday("Juneteenth", 6, 19));
+                }
+                return juneteenth;
+            }
+        }
+        
+        private static Holiday independenceDay;
+
+        public static Holiday IndependenceDay
+        {
+            get
+            {
+                if (independenceDay == null)
                 {
                     case DayOfWeek.Saturday:
                         yield return new KeyValuePair<DateTime, CalendarDay>(

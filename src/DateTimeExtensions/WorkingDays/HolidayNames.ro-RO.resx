@@ -117,103 +117,52 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AllSaints" xml:space="preserve">
-    <value>Allerheiligen</value>
-  </data>
-  <data name="Ascension" xml:space="preserve">
-    <value>Christi Himmelfahrt</value>
-  </data>
   <data name="Assumption" xml:space="preserve">
-    <value>Maria Himmelfahrt</value>
+    <value>Adormirea Maicii Domnului/Sfânta Maria Mare</value>
   </data>
-  <data name="Carnival" xml:space="preserve">
-    <value>Fasching</value>
+  <data name="ChildrensDay" xml:space="preserve">
+    <value>Ziua Copilului</value>
   </data>
   <data name="Christmas" xml:space="preserve">
-    <value>1. Weihnachtsfeiertag</value>
+    <value>Craciun</value>
   </data>
-  <data name="ChristmasEve" xml:space="preserve">
-    <value>Weihnachtsabend</value>
+  <data name="ChristmasSecondDay" xml:space="preserve">
+    <value>A doua zi de Craciun</value>
   </data>
-  <data name="CorpusChristi" xml:space="preserve">
-    <value>Fronleichnam</value>
-  </data>
-  <data name="DayOfTheDead" xml:space="preserve">
-    <value>Allerseelen</value>
+  <data name="DayOfTheUnification" xml:space="preserve">
+    <value>Ziua Unirii Principatelor Române</value>
   </data>
   <data name="Easter" xml:space="preserve">
-    <value>Ostern</value>
+    <value>Paștele</value>
   </data>
   <data name="EasterMonday" xml:space="preserve">
-    <value>Ostermontag</value>
-  </data>
-  <data name="EasterSaturday" xml:space="preserve">
-    <value>Ostersonntag</value>
-  </data>
-  <data name="Epiphany" xml:space="preserve">
-    <value>Heilige Drei Könige</value>
-  </data>
-  <data name="Espanha_ConstitutionDay" xml:space="preserve">
-    <value>Tag der Verfassung</value>
-  </data>
-  <data name="Espanha_NationalDay" xml:space="preserve">
-    <value>National Day</value>
-  </data>
-  <data name="GermanUnityDay" xml:space="preserve">
-    <value>Tag der Deutschen Einheit</value>
+    <value>Paștele</value>
   </data>
   <data name="GoodFriday" xml:space="preserve">
-    <value>Karfreitag</value>
+    <value>Vinerea Mare</value>
   </data>
-  <data name="ImaculateConception" xml:space="preserve">
-    <value>Maria Empfängnis</value>
+  <data name="InternationalWorkerDay" xml:space="preserve">
+    <value>Ziua Muncii</value>
   </data>
-  <data name="IndependanceDay" xml:space="preserve">
-    <value>Unabhängigkeitstag</value>
+  <data name="NationalDayOfRomania" xml:space="preserve">
+    <value>Ziua Națională a României</value>
   </data>
-  <data name="MaundyThursday" xml:space="preserve">
-    <value>Gründonnerstag</value>
-  </data>
-  <data name="MayDay" xml:space="preserve">
-    <value>May Day</value>
+  <data name="New Year's Eve" xml:space="preserve">
+    <value>Ajunul de anul nou</value>
   </data>
   <data name="NewYear" xml:space="preserve">
-    <value>Neujahr</value>
+    <value>Anul Nou</value>
   </data>
-  <data name="OurLadyOfAparecida" xml:space="preserve">
-    <value>Unserer lieben Frau von Aparecida</value>
-  </data>
-  <data name="PalmSunday" xml:space="preserve">
-    <value>Palmsonntag</value>
+  <data name="NewYearSecondDay" xml:space="preserve">
+    <value>A doua zi de Anul Nou</value>
   </data>
   <data name="Pentecost" xml:space="preserve">
-    <value>Pfingsten</value>
+    <value>Rusaliile</value>
   </data>
   <data name="PentecostMonday" xml:space="preserve">
-    <value>Pfingstmontag</value>
+    <value>A doua zi de Rusaliile</value>
   </data>
-  <data name="Portugal_FreedomDay" xml:space="preserve">
-    <value>Tag der Freiheit</value>
-  </data>
-  <data name="Portugal_PortugalDay" xml:space="preserve">
-    <value>Portugal Tag</value>
-  </data>
-  <data name="Portugal_RepublicDay" xml:space="preserve">
-    <value>Tag der Republik</value>
-  </data>
-  <data name="Portugal_RestorationIndependance" xml:space="preserve">
-    <value>Wiederherstellung der Unabhängigkeit</value>
-  </data>
-  <data name="RepublicDay" xml:space="preserve">
-    <value>Tag der Republik</value>
-  </data>
-  <data name="StStephenDay" xml:space="preserve">
-    <value>2. Weihnachtsfeiertag</value>
-  </data>
-  <data name="TiradentesDay" xml:space="preserve">
-    <value>Tiradentes Tag</value>
-  </data>
-  <data name="InternationalWorkersDay" xml:space="preserve">
-    <value>Tag der Arbeit</value>
+  <data name="SaintAndrewDay" xml:space="preserve">
+    <value>Sfântul Andrei</value>
   </data>
 </root>

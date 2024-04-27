@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 
 //
 // Copyright (c) 2011-2012, João Matos Silva <kappy@acydburne.com.pt>
@@ -76,5 +76,19 @@ namespace DateTimeExtensions.WorkingDays.CultureStrategies
                 new YearDependantDayStrategy(
                     year => year <= 2000 || year % 5 == 0,
                     new FixedDayStrategy(Month.May, 5))));
+        private static Holiday liberationDay;
+
+        public static Holiday LiberationDay
+        {
+            get
+            {
+                if (liberationDay == null)
+                {
+                    liberationDay = new YearDependantHoliday(year => (year >= 1990 || (year % 5 == 0 && year >= 1945)),
+                        new FixedHoliday("Liberation Day", 5, 5));
+                }
+                return liberationDay;
+            }
+        }
     }
 }

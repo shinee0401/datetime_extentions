@@ -18,52 +18,73 @@
 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using DateTimeExtensions.Common;
+using System;
 
 namespace DateTimeExtensions.NaturalText.CultureStrategies
 {
-    [Locale("es-ES")]
-    public class ES_ESNaturalTimeStrategy : NaturalTimeStrategyBase
+    /// <summary>
+    /// https://en.wikipedia.org/wiki/Public_holidays_in_Romania
+    /// https://ro.wikipedia.org/wiki/S%C4%83rb%C4%83tori_publice_%C3%AEn_Rom%C3%A2nia
+    /// </summary>
+    [Locale("ro-RO")]
+    public class RO_RONaturalTimeStrategy: NaturalTimeStrategyBase
     {
         protected override string YearText
         {
-            get { return "año"; }
+            get { return "an"; }
         }
 
         protected override string MonthText
         {
-            get { return "mes"; }
+            get { return "luna"; }
         }
 
         protected override string DayText
         {
-            get { return "dia"; }
+            get { return "zi"; }
         }
 
         protected override string HourText
         {
-            get { return "hora"; }
+            get { return "ora"; }
         }
 
         protected override string MinuteText
         {
-            get { return "minuto"; }
+            get { return "minut"; }
         }
 
         protected override string SecondText
         {
-            get { return "segundo"; }
+            get { return "secunda"; }
         }
 
         protected override string Pluralize(string text, int value)
         {
-            if (text.EndsWith("s"))
+            if (text.Equals("an", StringComparison.OrdinalIgnoreCase))
             {
-                return text + "es";
+                return "ani";
+            }
+            if (text.Equals("luna", StringComparison.OrdinalIgnoreCase))
+            {
+                return "luni";
+            }
+            if (text.Equals("zi", StringComparison.OrdinalIgnoreCase))
+            {
+                return "zile";
+            }
+            if (text.Equals("ora", StringComparison.OrdinalIgnoreCase))
+            {
+                return "ore";
+            }
+            if (text.Equals("minut", StringComparison.OrdinalIgnoreCase))
+            {
+                return text + "e";
+            }
+            if (text.Equals("secunda", StringComparison.OrdinalIgnoreCase))
+            {
+                return "secunde";
             }
             return base.Pluralize(text, value);
         }

@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 
 // 
 // Copyright (c) 2011-2012, João Matos Silva <kappy@acydburne.com.pt>
@@ -58,6 +58,33 @@ namespace DateTimeExtensions.WorkingDays.CultureStrategies
                 
                 //if the holiday is a sunday, the holiday is observed on next monday
                 if (date.Value.DayOfWeek == DayOfWeek.Sunday)
+                 var date = innerHoliday.GetInstance(year);
+                    if (date.HasValue)
+                    {
+                        if (holidayMap.ContainsKey(date.Value))
+                            // Check to see if holiday falling on the Sunday then moves to the monday, and there is another holiday scheduled for the monday
+                            // Update the Holiday Name of the Monday
+                            holidayMap[date.Value] = innerHoliday;
+                        else
+                            holidayMap.Add(date.Value, innerHoliday);
+                            //if the holiday is a sunday, the holiday is observed on next monday
+                            if (date.Value.DayOfWeek == DayOfWeek.Sunday)
+                            {
+                                holidayMap.AddIfInexistent(date.Value.AddDays(1), innerHoliday);
+                            }
+                    }
+            }
+            return holidayMap;
+        }
+
+        //21 March - Human Right's Day		
+        private static Holiday humanRightsDay;
+
+        public static Holiday HumanRightsDay
+        {
+            get
+            {
+                if (humanRightsDay == null)
                 {
                     yield return new KeyValuePair<DateTime, CalendarDay>(
                         date.Value.AddDays(1),

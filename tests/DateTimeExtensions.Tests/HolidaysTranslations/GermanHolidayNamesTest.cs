@@ -40,6 +40,22 @@ namespace DateTimeExtensions.Tests.HolidaysTranslations
             Assert.AreEqual(ChristianHolidays.Pentecost.Value.Name, "Pfingsten");
             Assert.AreEqual(ChristianHolidays.PentecostMonday.Value.Name, "Pfingstmontag");
             Assert.AreEqual(GlobalHolidays.InternationalWorkersDay.Value.Name, "Tag der Arbeit");
+            Assert.AreEqual(ChristianHolidays.Christmas.Name, "1. Weihnachtsfeiertag");
+            Assert.AreEqual(ChristianHolidays.StStephansDay.Name, "2. Weihnachtsfeiertag");
+            Assert.AreEqual(ChristianHolidays.Ascension.Name, "Christi Himmelfahrt");
+            Assert.AreEqual(GlobalHolidays.NewYear.Name, "Neujahr");
+            Assert.AreEqual(ChristianHolidays.Epiphany.Name, "Heilige Drei Könige");
+            Assert.AreEqual(ChristianHolidays.Carnival.Name, "Fasching");
+            Assert.AreEqual(ChristianHolidays.AllSaints.Name, "Allerheiligen");
+            Assert.AreEqual(ChristianHolidays.CorpusChristi.Name, "Fronleichnam");
+            Assert.AreEqual(ChristianHolidays.Easter.Name, "Ostern");
+            Assert.AreEqual(ChristianHolidays.GoodFriday.Name, "Karfreitag");
+            Assert.AreEqual(ChristianHolidays.MaundyThursday.Name, "Gründonnerstag");
+            Assert.AreEqual(ChristianHolidays.Assumption.Name, "Maria Himmelfahrt");
+            Assert.AreEqual(ChristianHolidays.ImaculateConception.Name, "Maria Empfängnis");
+            Assert.AreEqual(ChristianHolidays.Pentecost.Name, "Pfingsten");
+            Assert.AreEqual(ChristianHolidays.PentecostMonday.Name, "Pfingstmontag");
+            Assert.AreEqual(GlobalHolidays.InternationalWorkersDay.Name, "Tag der Arbeit");
         }
     }
 }

@@ -1,5 +1,23 @@
 Changelog
 ===================
+v5.5.7
+- Fixed de-AT with GoodFriday not being an holiday, thanks @cknabb Fixes #119
+
+v5.5.4
+- Fixed issue on en-ZA with overlapping holidays, thanks @samodeller
+
+v5.5.3
+- Added en-US Juneteenth, thanks @rdepin and @JonahGregory 
+
+v5.5.2
+- Fixed Liberation Day in Nl_NL, thanks @sergiu05
+
+v5.5.1
+- Fixed de-DE culture, thanks @Dabbel
+
+v5.5.0
+- Added tr-TR culture, thanks @onurozten
+
 v5.4.3
 - Fixing an issue on DateDiff not taking into account the accomulator when calculating months and days - Thanks @HotTaton 
 - Make EasterBasedHoliday threadsafe - Thanks @SumanKNath

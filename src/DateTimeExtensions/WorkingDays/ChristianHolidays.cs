@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 
 //
 // Copyright (c) 2011-2012, João Matos Silva <kappy@acydburne.com.pt>
@@ -21,6 +21,11 @@
 using System;
 using DateTimeExtensions.Common;
 using DateTimeExtensions.WorkingDays.OccurrencesCalculators;
+
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
 
 namespace DateTimeExtensions.WorkingDays
 {
@@ -49,6 +54,37 @@ namespace DateTimeExtensions.WorkingDays
 
         public static NamedDayInitializer Carnival { get; } = new NamedDayInitializer(() =>
             new NamedDay("Carnival", new NthDayAfterDayStrategy(-47, EasterDayStrategy.Instance)));
+
+        //source: https://en.wikipedia.org/wiki/Ash_Wednesday
+        //
+        private static Holiday ashWednesday;
+        public static Holiday AshWednesday
+        {
+            get
+            {
+                if (ashWednesday == null)
+                {
+                    ashWednesday = new EasterBasedHoliday("AshWednesday", -46);
+                }
+                return ashWednesday;
+            }
+        }
+
+
+        private static Holiday carnival;
+
+        public static Holiday Carnival
+        {
+            get
+            {
+                if (carnival == null)
+                {
+                    carnival = new EasterBasedHoliday("Carnival", -47);
+                }
+                return carnival;
+            }
+        }
+
 
         //source: http://en.wikipedia.org/wiki/Palm_Sunday
         //Palm Sunday is a Christian moveable feast that falls on the Sunday before Easter
@@ -98,7 +134,47 @@ namespace DateTimeExtensions.WorkingDays
         public static NamedDayInitializer StJoseph { get; } = new NamedDayInitializer(() =>
             new NamedDay("StJosephDay", new FixedDayStrategy(Month.March, 19)));
 
+
         public static NamedDayInitializer StPeterStPaul { get; } = new NamedDayInitializer(() =>
             new NamedDay("StPeterStPaul", new FixedDayStrategy(Month.June, 29)));
+        public static Holiday StStephansDay
+        {
+            get
+            {
+                if (stStephensDay == null)
+                {
+                    stStephensDay = new FixedHoliday("StStephenDay", 12, 26);
+                }
+                return stStephensDay;
+            }
+        }
+
+        private static Holiday stsPeterAndPaul;
+
+        public static Holiday StsPeterAndPaul
+        {
+            get
+            {
+                if(stsPeterAndPaul == null)
+                {
+                    stsPeterAndPaul = new FixedHoliday("StsPeterAndPaul", 6, 29);
+                }
+                return stsPeterAndPaul;
+            }
+        }
+
+        private static Holiday stRoseofLima;
+
+        public static Holiday StRoseOfLima
+        {
+            get
+            {
+                if(stRoseofLima == null)
+                {
+                    stRoseofLima = new FixedHoliday("St. Rose of Lima", 8, 23);
+                }
+                return stRoseofLima;
+            }
+        }
     }
 }
