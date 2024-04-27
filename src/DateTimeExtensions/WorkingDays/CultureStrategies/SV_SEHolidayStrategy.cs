@@ -19,9 +19,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using DateTimeExtensions.Common;
 
 namespace DateTimeExtensions.WorkingDays.CultureStrategies
@@ -40,10 +37,13 @@ namespace DateTimeExtensions.WorkingDays.CultureStrategies
             this.InnerHolidays.Add(ChristianHolidays.Ascension);
             this.InnerHolidays.Add(ChristianHolidays.Pentecost);
             this.InnerHolidays.Add(NationalDay);
+            this.InnerHolidays.Add(GlobalHolidays.MidsummerEve);
             this.InnerHolidays.Add(GlobalHolidays.MidsummerDay);
-            this.InnerHolidays.Add(ChristianHolidays.AllSaints);
+            this.InnerHolidays.Add(AllSaintsDay);
+            this.InnerHolidays.Add(ChristianHolidays.ChristmasEve);
             this.InnerHolidays.Add(ChristianHolidays.Christmas);
             this.InnerHolidays.Add(GlobalHolidays.BoxingDay);
+            this.InnerHolidays.Add(GlobalHolidays.NewYearsEve);
         }
 
         private static Holiday nationalDay;
@@ -57,6 +57,22 @@ namespace DateTimeExtensions.WorkingDays.CultureStrategies
                     nationalDay = new FixedHoliday("National Day", 6, 6);
                 }
                 return nationalDay;
+            }
+        }
+
+        //All Saints' Day - Saturday between 31 October and 6 November
+        // - Same as ChristianHolidays.AllSaints but has diferent ocurrence
+        private static Holiday allSaintsDay;
+
+        public static Holiday AllSaintsDay
+        {
+            get
+            {
+                if (allSaintsDay == null)
+                {
+                    allSaintsDay = new NthDayOfWeekAfterDayHoliday("All Saint's Day", 1, DayOfWeek.Saturday, 10, 31);
+                }
+                return allSaintsDay;
             }
         }
     }

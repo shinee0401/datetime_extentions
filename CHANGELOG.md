@@ -1,5 +1,64 @@
 Changelog
 ===================
+v5.5.7
+- Fixed de-AT with GoodFriday not being an holiday, thanks @cknabb Fixes #119
+
+v5.5.4
+- Fixed issue on en-ZA with overlapping holidays, thanks @samodeller
+
+v5.5.3
+- Added en-US Juneteenth, thanks @rdepin and @JonahGregory 
+
+v5.5.2
+- Fixed Liberation Day in Nl_NL, thanks @sergiu05
+
+v5.5.1
+- Fixed de-DE culture, thanks @Dabbel
+
+v5.5.0
+- Added tr-TR culture, thanks @onurozten
+
+v5.4.3
+- Fixing an issue on DateDiff not taking into account the accomulator when calculating months and days - Thanks @HotTaton 
+- Make EasterBasedHoliday threadsafe - Thanks @SumanKNath
+
+v5.4.2
+- Fixing SV-se fix All Saints (thanks @rasmusoh)
+
+v5.4.1
+- Fixing SV-se Eves Holidays (thanks @rasmusoh)
+
+v5.4.0
+- Added extensions to DateTimeOffset (the are proxy to the DateTime existing ones)
+
+v5.3.1
+-  Fixed 2 columbian holidays on the same date - Thanks @canro91
+
+v5.3.0
+- Fixed Thread safety issues.
+
+v5.2.0
+- Added es-CO culture, thanks to @canro91
+
+v5.1
+- Added Target netstandard 2.0
+- Added SourceLink to enable debugging by 3rd parties
+
+v5.0.3
+- Fixed FR culture, thanks to @YDEFAY
+
+v5.0.2
+- Added logo, thanks to @manuelbarbosa
+
+v5.0.1
+- Fixed an issue on en-US when the NewYear happens on a Saturday, not causin the NewYearEve on Friday to become a holiday (thanks @dalmuti509)
+
+v5.0
+- Regions support added
+- Added Polish (pl-PL) NaturalTime and Working Days Strategies (thanks @scoutboy420)
+- Fixed German pluralize (thanks @isepise)
+- This is not really a cahnge but this is the next release after we have a specific file for Changelog and License (thanks @jzeferino)
+- breaking change: Since the polish pluralize needs to have the number as context, the method signature changed to be able to support it and other languages that might need it as well
 
 v4.0.2
 - Repack to allow github username change

@@ -26,7 +26,7 @@ using System.Text;
 namespace DateTimeExtensions
 {
     /*
-     * Some of This Extensions were taken from http://dotnetslackers.com/articles/aspnet/5-Helpful-DateTime-Extension-Methods.aspx
+     * Some of This Extensions were taken from https://web.archive.org/web/20170325054219/https://dotnetslackers.com/articles/aspnet/5-Helpful-DateTime-Extension-Methods.aspx
      */
 
     public static class GeneralDateTimeExtensions
@@ -162,5 +162,63 @@ namespace DateTimeExtensions
             var halfIntervalTicks = ((interval.Ticks + 1) >> 1);
             return dt.AddTicks(halfIntervalTicks - ((dt.Ticks + halfIntervalTicks)%interval.Ticks));
         }
+
+        /// <summary>
+        /// Returns true if date range of <paramref name="dt"/> and <paramref name="dateAEnd"/> overlaps with range of <paramref name="dateBStart"/> and <paramref name="dateBEnd"/>.
+        /// </summary>
+        /// <remarks>If <paramref name="dt"/> & <paramref name="dateAEnd"/> overlaps with <paramref name="dateBStart"/> & <paramref name="dateBEnd"/>, it will return the true</remarks>
+        /// <param name="dt">Date A start period.</param>
+        /// <param name="dateAEnd">Date A end period.</param>
+        /// <param name="dateBStart">Date B start period.</param>
+        /// <param name="dateBEnd">Date B end period.</param>
+        /// <returns>True or false for overlapping date periods</returns>
+        public static bool IsOverlappedWith(this DateTime dt, DateTime dateAEnd, DateTime dateBStart, DateTime dateBEnd)
+        {
+            return dt < dateBEnd && dateBStart < dateAEnd;
+        }
+
+        /// <summary>
+        /// Returns true if date range of <paramref name="dt"/> and <paramref name="dateAEnd"/> is the same with range of <paramref name="dateBStart"/> and <paramref name="dateBEnd"/>.
+        /// </summary>
+        /// <remarks>If <paramref name="dt"/> & <paramref name="dateAEnd"/> is the same with <paramref name="dateBStart"/> & <paramref name="dateBEnd"/>, it will return the true</remarks>
+        /// <param name="dt">Date A start period.</param>
+        /// <param name="dateAEnd">Date A end period.</param>
+        /// <param name="dateBStart">Date B start period.</param>
+        /// <param name="dateBEnd">Date B end period.</param>
+        /// <returns>True or false for the same date periods</returns>
+        public static bool IsTheSameAs(this DateTime dt, DateTime dateAEnd, DateTime dateBStart, DateTime dateBEnd)
+        {
+            return dt == dateBStart && dateAEnd == dateBEnd;
+        }
+
+        /// <summary>
+        /// Returns true if date range of <paramref name="dateAStart"/> and <paramref name="dateAEnd"/> intersects with range of <paramref name="dateBStart"/> and <paramref name="dateBEnd"/>.
+        /// </summary>
+        /// <remarks>If <paramref name="dateAStart"/> & <paramref name="dateAEnd"/> intersects with <paramref name="dateBStart"/> & <paramref name="dateBEnd"/>, it will return the true</remarks>
+        /// <param name="dateAStart">Date A start period.</param>
+        /// <param name="dateAEnd">Date A end period.</param>
+        /// <param name="dateBStart">Date B start period.</param>
+        /// <param name="dateBEnd">Date B end period.</param>
+        /// <returns>True or false for intersecting date periods</returns>
+        public static bool IsIntersectWith(this DateTime dateAStart, DateTime dateAEnd, DateTime dateBStart, DateTime dateBEnd)
+        {
+            return (dateAStart <= dateBEnd && dateBStart <= dateAEnd);
+        }
+
+        /// <summary>
+        /// Returns true if date range of <paramref name="dateAStart"/> and <paramref name="dateAEnd"/> is inside with range of <paramref name="dateBStart"/> and <paramref name="dateBEnd"/>.
+        /// </summary>
+        /// <remarks>If <paramref name="dateAStart"/> & <paramref name="dateAEnd"/> is inside within <paramref name="dateBStart"/> & <paramref name="dateBEnd"/>, it will return the true</remarks>
+        /// <param name="dateAStart">Date A start period.</param>
+        /// <param name="dateAEnd">Date A end period.</param>
+        /// <param name="dateBStart">Date B start period.</param>
+        /// <param name="dateBEnd">Date B end period.</param>
+        /// <returns>True or false for <paramref name="dateAStart"/> & <paramref name="dateAEnd"/> inside of <paramref name="dateBStart"/> & <paramref name="dateBEnd"/> date period</returns>
+        public static bool IsInsideIn(this DateTime dateAStart, DateTime dateAEnd, DateTime dateBStart, DateTime dateBEnd)
+        {
+            return (dateAStart >= dateBStart && dateAEnd <= dateBEnd);
+
+        }
+
     }
 }

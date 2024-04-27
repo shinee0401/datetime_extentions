@@ -33,7 +33,7 @@ namespace DateTimeExtensions.WorkingDays.CultureStrategies
         {
             this.InnerHolidays.Add(GlobalHolidays.NewYear);
             this.InnerHolidays.Add(ChristianHolidays.Christmas);
-
+            this.InnerHolidays.Add(NewYearsEve);
             this.InnerHolidays.Add(IndependenceDay);
             this.InnerHolidays.Add(GlobalHolidays.VeteransDay);
             this.InnerHolidays.Add(MartinLutherKing);
@@ -42,6 +42,7 @@ namespace DateTimeExtensions.WorkingDays.CultureStrategies
             this.InnerHolidays.Add(LaborDay);
             this.InnerHolidays.Add(ColumbusDay);
             this.InnerHolidays.Add(ThanksgivingDay);
+            this.InnerHolidays.Add(Juneteenth);
         }
 
         protected override IDictionary<DateTime, Holiday> BuildObservancesMap(int year)
@@ -69,7 +70,22 @@ namespace DateTimeExtensions.WorkingDays.CultureStrategies
             }
             return holidayMap;
         }
-
+        
+        //Juneteenth - new as of 2021
+        private static Holiday juneteenth;
+        
+        public static Holiday Juneteenth
+        {
+            get
+            {
+                if (juneteenth == null)
+                {
+                    juneteenth = new YearDependantHoliday(year => year >= 2021, new FixedHoliday("Juneteenth", 6, 19));
+                }
+                return juneteenth;
+            }
+        }
+        
         private static Holiday independenceDay;
 
         public static Holiday IndependenceDay
@@ -180,6 +196,20 @@ namespace DateTimeExtensions.WorkingDays.CultureStrategies
                         CountDirection.FromFirst);
                 }
                 return thanksgivingDay;
+            }
+        }
+
+        private static Holiday newYearsEve;
+
+        public static Holiday NewYearsEve
+        {
+            get
+            {
+                if (newYearsEve == null)
+                {
+                    newYearsEve = new NewYearEveFridayOnly();
+                }
+                return newYearsEve;
             }
         }
     }

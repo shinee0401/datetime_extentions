@@ -50,21 +50,26 @@ namespace DateTimeExtensions.WorkingDays.CultureStrategies
             IDictionary<DateTime, Holiday> holidayMap = new Dictionary<DateTime, Holiday>();
             foreach (var innerHoliday in InnerHolidays)
             {
-                var date = innerHoliday.GetInstance(year);
-                if (date.HasValue)
-                {
-                    holidayMap.Add(date.Value, innerHoliday);
-                    //if the holiday is a sunday, the holiday is observed on next monday
-                    if (date.Value.DayOfWeek == DayOfWeek.Sunday)
+                 var date = innerHoliday.GetInstance(year);
+                    if (date.HasValue)
                     {
-                        holidayMap.AddIfInexistent(date.Value.AddDays(1), innerHoliday);
+                        if (holidayMap.ContainsKey(date.Value))
+                            // Check to see if holiday falling on the Sunday then moves to the monday, and there is another holiday scheduled for the monday
+                            // Update the Holiday Name of the Monday
+                            holidayMap[date.Value] = innerHoliday;
+                        else
+                            holidayMap.Add(date.Value, innerHoliday);
+                            //if the holiday is a sunday, the holiday is observed on next monday
+                            if (date.Value.DayOfWeek == DayOfWeek.Sunday)
+                            {
+                                holidayMap.AddIfInexistent(date.Value.AddDays(1), innerHoliday);
+                            }
                     }
-                }
             }
             return holidayMap;
         }
 
-        //21 March - Human Rigth's Day		
+        //21 March - Human Right's Day		
         private static Holiday humanRightsDay;
 
         public static Holiday HumanRightsDay
@@ -73,7 +78,7 @@ namespace DateTimeExtensions.WorkingDays.CultureStrategies
             {
                 if (humanRightsDay == null)
                 {
-                    humanRightsDay = new FixedHoliday("Human Rigth's Day", 3, 21);
+                    humanRightsDay = new FixedHoliday("Human Right's Day", 3, 21);
                 }
                 return humanRightsDay;
             }

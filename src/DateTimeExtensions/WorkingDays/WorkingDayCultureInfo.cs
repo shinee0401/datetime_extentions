@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 
 // 
 // Copyright (c) 2011-2012, João Matos Silva <kappy@acydburne.com.pt>
@@ -35,7 +35,7 @@ namespace DateTimeExtensions.WorkingDays
         private IWorkingDayOfWeekStrategy workingDayOfWeekStrategy;
         private IHolidayStrategy holidayStrategy;
 
-        public WorkingDayCultureInfo() : this(CultureInfo.CurrentCulture.Name)
+        public WorkingDayCultureInfo() : this(CultureInfo.CurrentCulture.Name, null)
         {
         }
 

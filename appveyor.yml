@@ -12,7 +12,7 @@ os: Visual Studio 2017
 configuration: Release
 
 build_script:
-- ps: .\Build.ps1
+- ps: .\Build.ps1 -Target Pack
 
 test: off  
 
@@ -35,7 +35,7 @@ deploy:
 - provider: NuGet
   name: production
   api_key:
-    secure: c18PmLObjM4XzNKNj8/LzYty11gya98+IerJXipzMmL9wgmHS6cGAJWYpJkDxmU2
+    secure: olWt58dVh65SDbzUsuaZv3lZefz8xcnZ62g5tZJDwPLGUlfKquZuow/j/LX5LiuY
   on:
     branch: master
     appveyor_repo_tag: true
