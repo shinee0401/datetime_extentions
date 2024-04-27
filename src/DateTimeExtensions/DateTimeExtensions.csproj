@@ -6,7 +6,7 @@
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <AssemblyName>DateTimeExtensions</AssemblyName>
     <PackageId>DateTimeExtensions</PackageId>
-    <PackageTags>Natural;Date;Time;Relative;Calendar;Holiday;Workingday;DateTime</PackageTags>
+    <PackageTags>Natural;Date;Time;Relative;Calendar;Holiday;Workingday;DateTime;Extensions</PackageTags>
     <PackageProjectUrl>https://github.com/joaomatossilva/DateTimeExtensions/wiki</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>

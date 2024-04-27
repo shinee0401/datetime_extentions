@@ -34,8 +34,43 @@ namespace DateTimeExtensions.Common
                 assemblies = new [] { type.Assembly };
             }
             var types = assemblies.SelectMany(a => a.GetAssemblyTypes())
-                .Where(p => type.IsAssignableFrom(p.GetTypeInfo()) && p.GetTypeInfo().GetCustomAttributes(typeof(LocaleAttribute), false)
-                    .Any(a => ((LocaleAttribute) a).Locale.Equals(locale)));
+                .Where(x => MatchTypePredicate(x.GetTypeInfo()));
+
+            bool MatchTypePredicate(TypeInfo proposedType)
+            {
+                if (!type.IsAssignableFrom(proposedType)) {
+                    //if the type does not implement the type of our generic, don't even look further
+                    return false;
+                }
+
+                var localeAttributes = proposedType.GetCustomAttributes(typeof(LocaleAttribute), false).Cast<LocaleAttribute>();
+                foreach (var localeAttribute in localeAttributes)
+                {
+                    if (localeAttribute == null)
+                    {
+                        //if we don't have a locale attribure, don't look further also
+                        continue;
+                    }
+
+                    if (localeAttribute.Locale == null || !localeAttribute.Locale.Equals(locale, StringComparison.OrdinalIgnoreCase))
+                    {
+                        //if the locale is not the same, this is not the implementation we're looking for
+                        continue;
+                    }
+
+                    if (string.IsNullOrEmpty(region) && string.IsNullOrEmpty(localeAttribute.Region))
+                    {
+                        //if there is no region and this type does not have a region set, we've found our candidate
+                        return true;
+                    }
+                    else if (!string.IsNullOrEmpty(region) && region.Equals(localeAttribute.Region, StringComparison.OrdinalIgnoreCase))
+                    {
+                        //we found our locale and region
+                        return true;
+                    }
+                }
+                return false;
+            }
 
             var implementationType = types.FirstOrDefault();
             if (implementationType == null)

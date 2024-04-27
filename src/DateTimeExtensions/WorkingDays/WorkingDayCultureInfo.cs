@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 
 // 
 // Copyright (c) 2011-2012, João Matos Silva <kappy@acydburne.com.pt>
@@ -76,10 +76,9 @@ namespace DateTimeExtensions.WorkingDays
             return this.holidayStrategy.GetAllCalendarDaysOfYear(year);
         }
 
-        public string Name
-        {
-            get { return name; }
-        }
+        public string Name => name;
+
+        public string Region => region;
 
         private Func<string, string, IWorkingDayOfWeekStrategy> locateWorkingDayOfWeekStrategy;
 
