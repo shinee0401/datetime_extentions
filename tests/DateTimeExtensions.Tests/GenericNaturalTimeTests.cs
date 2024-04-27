@@ -11,12 +11,12 @@ namespace DateTimeExtensions.Tests
     public class GenericNaturalTimeTests
     {
         private NaturalTextCultureInfo foo_ci = new NaturalTextCultureInfo("foo");
+        private DateTime fromTime = new DateTime(2016,6,21, 10, 28, 0);
 
         [Test]
         public void can_tranlate_to_natural_text()
         {
-            var fromTime = DateTime.Now;
-            var toTime = DateTime.Now.AddHours(2).AddMinutes(45);
+            var toTime = fromTime.AddHours(2).AddMinutes(45);
 
             var naturalText = fromTime.ToNaturalText(toTime, false, foo_ci);
 
@@ -28,7 +28,6 @@ namespace DateTimeExtensions.Tests
         [Test]
         public void can_tranlate_to_natural_text_rounded()
         {
-            var fromTime = DateTime.Now;
             var toTime = fromTime.AddHours(2).AddMinutes(45);
 
             var naturalText = fromTime.ToNaturalText(toTime, true, foo_ci);
@@ -42,8 +41,7 @@ namespace DateTimeExtensions.Tests
         [Test]
         public void can_tranlate_to_exact_natural_text()
         {
-            var fromTime = DateTime.Now;
-            var toTime = DateTime.Now.AddHours(2).AddMinutes(30);
+            var toTime = fromTime.AddHours(2).AddMinutes(30);
 
             var naturalText = fromTime.ToExactNaturalText(toTime, foo_ci);
 
@@ -55,7 +53,6 @@ namespace DateTimeExtensions.Tests
         [Test]
         public void can_tranlate_to_exact_natural_text_full()
         {
-            var fromTime = DateTime.Now;
             var toTime = fromTime.AddSeconds(6).AddMinutes(5).AddHours(4).AddDays(3).AddMonths(2).AddYears(2);
 
             var naturalText = fromTime.ToExactNaturalText(toTime, foo_ci);
@@ -120,7 +117,6 @@ namespace DateTimeExtensions.Tests
         [Test]
         public void are_orderless()
         {
-            var fromTime = DateTime.Now;
             var toTime = fromTime.AddSeconds(6).AddMinutes(5).AddHours(4).AddDays(3).AddMonths(2).AddYears(2);
 
             var naturalText = fromTime.ToExactNaturalText(toTime, foo_ci);
@@ -240,5 +236,45 @@ namespace DateTimeExtensions.Tests
             Assert.AreEqual("45 minutes", fromTime.ToNaturalText(roundedMinutes_lastQuarter1, foo_ci));
             Assert.AreEqual("45 minutes", fromTime.ToNaturalText(roundedMinutes_lastQuarter2, foo_ci));
         }
+
+        [Test]
+        public void get_diff_between_2019_11_27_and_2018_11_28()
+        {
+            var simpleDate1 = new DateTime(2018, 11, 28);
+            var simpleDate2 = new DateTime(2019, 11, 27);
+
+            var difference = simpleDate2.GetDiff(simpleDate1);
+
+            Assert.AreEqual(0, difference.Years);
+            Assert.AreEqual(11, difference.Months);
+            Assert.AreEqual(29, difference.Days);
+        }
+
+        [Test]
+        public void get_diff_between_2019_02_27_and_2018_02_28()
+        {
+            var simpleDate1 = new DateTime(2018, 2, 28);
+            var simpleDate2 = new DateTime(2019, 2, 27);
+
+            var difference = simpleDate2.GetDiff(simpleDate1);
+
+            Assert.AreEqual(0, difference.Years);
+            Assert.AreEqual(11, difference.Months);
+            Assert.AreEqual(27, difference.Days);
+        }
+
+        [Test]
+        public void get_diff_between_2019_02_28_and_2018_01_29()
+        {
+            var simpleDate1 = new DateTime(2018, 1, 29);
+            var simpleDate2 = new DateTime(2019, 2, 28);
+
+            var difference = simpleDate2.GetDiff(simpleDate1);
+
+            Assert.AreEqual(1, difference.Years);
+            Assert.AreEqual(0, difference.Months);
+            Assert.AreEqual(30, difference.Days);
+        }
+
     }
 }

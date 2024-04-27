@@ -1,8 +1,5 @@
 ﻿using System;
 using NUnit.Framework;
-using System.Globalization;
-using System.Threading;
-using DateTimeExtensions;
 using DateTimeExtensions.WorkingDays;
 using System.Collections.Generic;
 
@@ -15,7 +12,7 @@ namespace DateTimeExtensions.Tests
 
         private IDictionary<int, DateTime> easterDates;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void SetUpYears()
         {
             years = new int[] {1800, 1899, 1900, 1999, 2000, 2025, 2035, 2067, 2099};
@@ -38,7 +35,7 @@ namespace DateTimeExtensions.Tests
         {
             foreach (int year in years)
             {
-                var easterHoliday = ChristianHolidays.Easter;
+                var easterHoliday = ChristianHolidays.Easter.Value;
                 var easter = easterHoliday.GetInstance(year);
                 Assert.IsTrue(easter.HasValue);
                 Assert.AreEqual(DayOfWeek.Sunday, easter.Value.DayOfWeek);
@@ -53,7 +50,7 @@ namespace DateTimeExtensions.Tests
             {
                 var easter = easterDates[year];
 
-                var pentecostHoliday = ChristianHolidays.Pentecost;
+                var pentecostHoliday = ChristianHolidays.Pentecost.Value;
                 var pentecost = pentecostHoliday.GetInstance(year);
                 Assert.IsTrue(pentecost.HasValue);
                 Assert.AreEqual(DayOfWeek.Sunday, pentecost.Value.DayOfWeek);
@@ -71,7 +68,7 @@ namespace DateTimeExtensions.Tests
             {
                 var easter = easterDates[year];
 
-                var ascencionHoliday = ChristianHolidays.Ascension;
+                var ascencionHoliday = ChristianHolidays.Ascension.Value;
                 var ascencion = ascencionHoliday.GetInstance(year);
                 Assert.IsTrue(ascencion.HasValue);
                 Assert.AreEqual(DayOfWeek.Thursday, ascencion.Value.DayOfWeek);
@@ -90,7 +87,7 @@ namespace DateTimeExtensions.Tests
             {
                 var easter = easterDates[year];
 
-                var palmSundayHoliday = ChristianHolidays.PalmSunday;
+                var palmSundayHoliday = ChristianHolidays.PalmSunday.Value;
                 var palmSunday = palmSundayHoliday.GetInstance(year);
                 Assert.IsTrue(palmSunday.HasValue);
                 Assert.AreEqual(DayOfWeek.Sunday, palmSunday.Value.DayOfWeek);
@@ -108,7 +105,7 @@ namespace DateTimeExtensions.Tests
             {
                 var easter = easterDates[year];
 
-                var carnivalHoliday = ChristianHolidays.Carnival;
+                var carnivalHoliday = ChristianHolidays.Carnival.Value;
                 var carnival = carnivalHoliday.GetInstance(year);
                 Assert.IsTrue(carnival.HasValue);
                 Assert.AreEqual(DayOfWeek.Tuesday, carnival.Value.DayOfWeek);

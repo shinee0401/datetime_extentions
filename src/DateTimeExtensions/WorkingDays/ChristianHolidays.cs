@@ -1,8 +1,8 @@
-﻿#region License
+#region License
 
-// 
+//
 // Copyright (c) 2011-2012, João Matos Silva <kappy@acydburne.com.pt>
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -14,12 +14,16 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-// 
+//
 
 #endregion
 
 using System;
+using DateTimeExtensions.Common;
+using DateTimeExtensions.WorkingDays.OccurrencesCalculators;
+
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -27,103 +31,45 @@ namespace DateTimeExtensions.WorkingDays
 {
     public static class ChristianHolidays
     {
-        private static Holiday christmas;
+        public static NamedDayInitializer Christmas { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Christmas", new FixedDayStrategy(Month.December, 25)));
 
-        public static Holiday Christmas
+        public static NamedDayInitializer Epiphany { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Epiphany", new FixedDayStrategy(Month.January, 6)));
+
+        public static NamedDayInitializer Assumption { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Assumption", new FixedDayStrategy(Month.August, 15)));
+
+        public static NamedDayInitializer AllSaints { get; } = new NamedDayInitializer(() =>
+            new NamedDay("AllSaints", new FixedDayStrategy(Month.November, 1)));
+
+        public static NamedDayInitializer DayOfTheDead { get; } = new NamedDayInitializer(() =>
+            new NamedDay("DayOfTheDead", new FixedDayStrategy(Month.November, 2)));
+
+        public static NamedDayInitializer ImaculateConception { get; } = new NamedDayInitializer(() =>
+            new NamedDay("ImaculateConception", new FixedDayStrategy(Month.December, 8)));
+
+        public static NamedDayInitializer Easter { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Easter", EasterDayStrategy.Instance));
+
+        public static NamedDayInitializer Carnival { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Carnival", new NthDayAfterDayStrategy(-47, EasterDayStrategy.Instance)));
+
+        //source: https://en.wikipedia.org/wiki/Ash_Wednesday
+        //
+        private static Holiday ashWednesday;
+        public static Holiday AshWednesday
         {
             get
             {
-                if (christmas == null)
+                if (ashWednesday == null)
                 {
-                    christmas = new FixedHoliday("Christmas", 12, 25);
+                    ashWednesday = new EasterBasedHoliday("AshWednesday", -46);
                 }
-                return christmas;
+                return ashWednesday;
             }
         }
 
-        private static Holiday epiphany;
-
-        public static Holiday Epiphany
-        {
-            get
-            {
-                if (epiphany == null)
-                {
-                    epiphany = new FixedHoliday("Epiphany", 1, 6);
-                }
-                return epiphany;
-            }
-        }
-
-        private static Holiday assumption;
-
-        public static Holiday Assumption
-        {
-            get
-            {
-                if (assumption == null)
-                {
-                    assumption = new FixedHoliday("Assumption", 8, 15);
-                }
-                return assumption;
-            }
-        }
-
-        private static Holiday allSaints;
-
-        public static Holiday AllSaints
-        {
-            get
-            {
-                if (allSaints == null)
-                {
-                    allSaints = new FixedHoliday("AllSaints", 11, 1);
-                }
-                return allSaints;
-            }
-        }
-
-        private static Holiday dayOfTheDead;
-
-        public static Holiday DayOfTheDead
-        {
-            get
-            {
-                if (dayOfTheDead == null)
-                {
-                    dayOfTheDead = new FixedHoliday("DayOfTheDead", 11, 2);
-                }
-                return dayOfTheDead;
-            }
-        }
-
-        private static Holiday imaculateConception;
-
-        public static Holiday ImaculateConception
-        {
-            get
-            {
-                if (imaculateConception == null)
-                {
-                    imaculateConception = new FixedHoliday("ImaculateConception", 12, 8);
-                }
-                return imaculateConception;
-            }
-        }
-
-        private static Holiday easter;
-
-        public static Holiday Easter
-        {
-            get
-            {
-                if (easter == null)
-                {
-                    easter = new EasterBasedHoliday("Easter", 0);
-                }
-                return easter;
-            }
-        }
 
         private static Holiday carnival;
 
@@ -139,158 +85,58 @@ namespace DateTimeExtensions.WorkingDays
             }
         }
 
+
         //source: http://en.wikipedia.org/wiki/Palm_Sunday
         //Palm Sunday is a Christian moveable feast that falls on the Sunday before Easter
-        private static Holiday palmSunday;
+        public static NamedDayInitializer PalmSunday { get; } = new NamedDayInitializer(() =>
+            new NamedDay("PalmSunday", new NthDayOfWeekAfterDayStrategy(-1, DayOfWeek.Sunday, EasterDayStrategy.Instance)));
 
-        public static Holiday PalmSunday
-        {
-            get
-            {
-                if (palmSunday == null)
-                {
-                    palmSunday = new NthDayOfWeekAfterDayHoliday("PalmSunday", -1, DayOfWeek.Sunday, Easter);
-                }
-                return palmSunday;
-            }
-        }
+        public static NamedDayInitializer MaundyThursday { get; } = new NamedDayInitializer(() =>
+            new NamedDay("MaundyThursday", new NthDayAfterDayStrategy(-3, EasterDayStrategy.Instance)));
 
-        private static Holiday maundyThursday;
+        public static NamedDayInitializer GoodFriday { get; } = new NamedDayInitializer(() =>
+            new NamedDay("GoodFriday", new NthDayAfterDayStrategy(-2, EasterDayStrategy.Instance)));
 
-        public static Holiday MaundyThursday
-        {
-            get
-            {
-                if (maundyThursday == null)
-                {
-                    maundyThursday = new EasterBasedHoliday("MaundyThursday", -3);
-                }
-                return maundyThursday;
-            }
-        }
+        public static NamedDayInitializer EasterMonday { get; } = new NamedDayInitializer(() =>
+            new NamedDay("EasterMonday", new NthDayAfterDayStrategy(1, EasterDayStrategy.Instance)));
 
-        private static Holiday goodFriday;
+        public static NamedDayInitializer EasterSaturday { get; } = new NamedDayInitializer(() =>
+            new NamedDay("EasterSaturday", new NthDayAfterDayStrategy(-1, EasterDayStrategy.Instance)));
 
-        public static Holiday GoodFriday
-        {
-            get
-            {
-                if (goodFriday == null)
-                {
-                    goodFriday = new EasterBasedHoliday("GoodFriday", -2);
-                }
-                return goodFriday;
-            }
-        }
+        public static NamedDayInitializer CorpusChristi { get; } = new NamedDayInitializer(() =>
+            new NamedDay("CorpusChristi", new NthDayAfterDayStrategy(60, EasterDayStrategy.Instance)));
 
-        private static Holiday easterMonday;
-
-        public static Holiday EasterMonday
-        {
-            get
-            {
-                if (easterMonday == null)
-                {
-                    easterMonday = new EasterBasedHoliday("EasterMonday", 1);
-                }
-                return easterMonday;
-            }
-        }
-
-        private static Holiday easterSaturday;
-
-        public static Holiday EasterSaturday
-        {
-            get
-            {
-                if (easterSaturday == null)
-                {
-                    easterSaturday = new EasterBasedHoliday("EasterSaturday", -1);
-                }
-                return easterSaturday;
-            }
-        }
-
-        private static Holiday corpusChristi;
-
-        public static Holiday CorpusChristi
-        {
-            get
-            {
-                if (corpusChristi == null)
-                {
-                    corpusChristi = new EasterBasedHoliday("CorpusChristi", 60);
-                }
-                return corpusChristi;
-            }
-        }
+        public static NamedDayInitializer SacredHeart { get; } = new NamedDayInitializer(() =>
+            new NamedDay("SacredHeart", new NthDayAfterDayStrategy(68, EasterDayStrategy.Instance)));
 
         //source: http://en.wikipedia.org/wiki/Pentecost
-        //50 days after Easter (inclusive of Easter Day). In other words, it falls on the eighth Sunday, counting Easter Day 
+        //50 days after Easter (inclusive of Easter Day). In other words, it falls on the eighth Sunday, counting Easter Day
         //Also know as Whit Sunday, Whitsun, Whit
-        private static Holiday pentecost;
-
-        public static Holiday Pentecost
-        {
-            get
-            {
-                if (pentecost == null)
-                {
-                    //count offset is 7 because we aren't counting with the easter day inclusive
-                    pentecost = new NthDayOfWeekAfterDayHoliday("Pentecost", 7, DayOfWeek.Sunday, Easter);
-                }
-                return pentecost;
-            }
-        }
+        public static NamedDayInitializer Pentecost { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Pentecost", new NthDayAfterDayStrategy(49, EasterDayStrategy.Instance)));
 
         //Also known as Whit monday
-        private static Holiday pentecostMonday;
-
-        public static Holiday PentecostMonday
-        {
-            get
-            {
-                if (pentecostMonday == null)
-                {
-                    pentecostMonday = new EasterBasedHoliday("PentecostMonday", 50);
-                }
-                return pentecostMonday;
-            }
-        }
+        public static NamedDayInitializer PentecostMonday { get; } = new NamedDayInitializer(() =>
+            new NamedDay("PentecostMonday", new NthDayAfterDayStrategy(50, EasterDayStrategy.Instance)));
 
         //source: http://en.wikipedia.org/wiki/Ascension_Day
         // Ascension Day is traditionally celebrated on a Thursday, the fortieth day of Easter
         // again, easter day is included
-        private static Holiday ascension;
+        public static NamedDayInitializer Ascension { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Ascension", new NthDayAfterDayStrategy(39, EasterDayStrategy.Instance)));
 
-        public static Holiday Ascension
-        {
-            get
-            {
-                if (ascension == null)
-                {
-                    ascension = new EasterBasedHoliday("Ascension", 39);
-                }
-                return ascension;
-            }
-        }
+        public static NamedDayInitializer ChristmasEve { get; } = new NamedDayInitializer(() =>
+            new NamedDay("ChristmasEve", new FixedDayStrategy(Month.December, 24)));
 
-        private static Holiday christmasEve;
+        public static NamedDayInitializer StStephansDay { get; } = new NamedDayInitializer(() =>
+            new NamedDay("StStephansDay", new FixedDayStrategy(Month.December, 26)));
 
-        public static Holiday ChristmasEve
-        {
-            get
-            {
-                if (christmasEve == null)
-                {
-                    christmasEve = new FixedHoliday("ChristmasEve", 12, 24);
-                }
-                return christmasEve;
-            }
-        }
+        public static NamedDayInitializer StJoseph { get; } = new NamedDayInitializer(() =>
+            new NamedDay("StJosephDay", new FixedDayStrategy(Month.March, 19)));
 
-        private static Holiday stStephensDay;
 
+        public static NamedDayInitializer StPeterStPaul { get; } = new NamedDayInitializer(() =>
+            new NamedDay("StPeterStPaul", new FixedDayStrategy(Month.June, 29)));
         public static Holiday StStephansDay
         {
             get
@@ -300,6 +146,34 @@ namespace DateTimeExtensions.WorkingDays
                     stStephensDay = new FixedHoliday("StStephenDay", 12, 26);
                 }
                 return stStephensDay;
+            }
+        }
+
+        private static Holiday stsPeterAndPaul;
+
+        public static Holiday StsPeterAndPaul
+        {
+            get
+            {
+                if(stsPeterAndPaul == null)
+                {
+                    stsPeterAndPaul = new FixedHoliday("StsPeterAndPaul", 6, 29);
+                }
+                return stsPeterAndPaul;
+            }
+        }
+
+        private static Holiday stRoseofLima;
+
+        public static Holiday StRoseOfLima
+        {
+            get
+            {
+                if(stRoseofLima == null)
+                {
+                    stRoseofLima = new FixedHoliday("St. Rose of Lima", 8, 23);
+                }
+                return stRoseofLima;
             }
         }
     }

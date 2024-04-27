@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 
 // 
 // Copyright (c) 2011-2012, João Matos Silva <kappy@acydburne.com.pt>
@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DateTimeExtensions.Common;
+using DateTimeExtensions.WorkingDays.OccurrencesCalculators;
 
 namespace DateTimeExtensions.WorkingDays.CultureStrategies
 {
@@ -31,35 +32,47 @@ namespace DateTimeExtensions.WorkingDays.CultureStrategies
     {
         public EN_ZAHolidayStrategy()
         {
-            this.InnerHolidays.Add(GlobalHolidays.NewYear);
-            this.InnerHolidays.Add(HumanRightsDay);
-            this.InnerHolidays.Add(ChristianHolidays.GoodFriday);
-            this.InnerHolidays.Add(FamilyDay);
-            this.InnerHolidays.Add(FreedomDay);
-            this.InnerHolidays.Add(GlobalHolidays.InternationalWorkersDay);
-            this.InnerHolidays.Add(YouthDay);
-            this.InnerHolidays.Add(NationalWomansDay);
-            this.InnerHolidays.Add(HeritageDay);
-            this.InnerHolidays.Add(DayOfReconciliation);
-            this.InnerHolidays.Add(ChristianHolidays.Christmas);
-            this.InnerHolidays.Add(DayOfGoodwill);
+            this.InnerCalendarDays.Add(new Holiday(GlobalHolidays.NewYear));
+            this.InnerCalendarDays.Add(new Holiday(HumanRightsDay));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.GoodFriday));
+            this.InnerCalendarDays.Add(new Holiday(FamilyDay));
+            this.InnerCalendarDays.Add(new Holiday(FreedomDay));
+            this.InnerCalendarDays.Add(new Holiday(GlobalHolidays.InternationalWorkersDay));
+            this.InnerCalendarDays.Add(new Holiday(YouthDay));
+            this.InnerCalendarDays.Add(new Holiday(NationalWomansDay));
+            this.InnerCalendarDays.Add(new Holiday(HeritageDay));
+            this.InnerCalendarDays.Add(new Holiday(DayOfReconciliation));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.Christmas));
+            this.InnerCalendarDays.Add(new Holiday(DayOfGoodwill));
         }
 
-        protected override IDictionary<DateTime, Holiday> BuildObservancesMap(int year)
+        protected override IEnumerable<KeyValuePair<DateTime, CalendarDay>> GetYearObservances(int year)
         {
-            IDictionary<DateTime, Holiday> holidayMap = new Dictionary<DateTime, Holiday>();
-            foreach (var innerHoliday in InnerHolidays)
+            foreach (var calendarDay in InnerCalendarDays)
             {
-                var date = innerHoliday.GetInstance(year);
-                if (date.HasValue)
+                var date = calendarDay.Day.GetInstance(year);
+                if (date == null)
                 {
-                    holidayMap.Add(date.Value, innerHoliday);
-                    //if the holiday is a sunday, the holiday is observed on next monday
-                    if (date.Value.DayOfWeek == DayOfWeek.Sunday)
-                    {
-                        holidayMap.AddIfInexistent(date.Value.AddDays(1), innerHoliday);
-                    }
+                    continue;
                 }
+                
+                //if the holiday is a sunday, the holiday is observed on next monday
+                if (date.Value.DayOfWeek == DayOfWeek.Sunday)
+                 var date = innerHoliday.GetInstance(year);
+                    if (date.HasValue)
+                    {
+                        if (holidayMap.ContainsKey(date.Value))
+                            // Check to see if holiday falling on the Sunday then moves to the monday, and there is another holiday scheduled for the monday
+                            // Update the Holiday Name of the Monday
+                            holidayMap[date.Value] = innerHoliday;
+                        else
+                            holidayMap.Add(date.Value, innerHoliday);
+                            //if the holiday is a sunday, the holiday is observed on next monday
+                            if (date.Value.DayOfWeek == DayOfWeek.Sunday)
+                            {
+                                holidayMap.AddIfInexistent(date.Value.AddDays(1), innerHoliday);
+                            }
+                    }
             }
             return holidayMap;
         }
@@ -73,115 +86,46 @@ namespace DateTimeExtensions.WorkingDays.CultureStrategies
             {
                 if (humanRightsDay == null)
                 {
-                    humanRightsDay = new FixedHoliday("Human Right's Day", 3, 21);
+                    yield return new KeyValuePair<DateTime, CalendarDay>(
+                        date.Value.AddDays(1),
+                        new Holiday(
+                            new NamedDay(
+                                calendarDay.Day.Name + " Observed",
+                                new NthDayAfterDayStrategy(1, new NamedDayStrategy(calendarDay.Day)))));
                 }
-                return humanRightsDay;
             }
         }
+
+        //21 March - Human Right's Day		
+        public static NamedDayInitializer HumanRightsDay { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Human Right's Day", new FixedDayStrategy(Month.March, 21)));
 
         //First Monday after Easter Sunday - Family Day
-        private static Holiday familyDay;
-
-        public static Holiday FamilyDay
-        {
-            get
-            {
-                if (familyDay == null)
-                {
-                    familyDay = new EasterBasedHoliday("Family Day", 1);
-                }
-                return familyDay;
-            }
-        }
+        public static NamedDayInitializer FamilyDay { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Family Day", new NthDayAfterDayStrategy(1, EasterDayStrategy.Instance)));
 
         //27th April - Freedom Day
-        private static Holiday freedomDay;
-
-        public static Holiday FreedomDay
-        {
-            get
-            {
-                if (freedomDay == null)
-                {
-                    freedomDay = new FixedHoliday("Freedom Day", 4, 27);
-                }
-                return freedomDay;
-            }
-        }
+        public static NamedDayInitializer FreedomDay { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Freedom Day", new FixedDayStrategy(Month.April, 27)));
 
         //16th June - Youth Day
-        private static Holiday youthDay;
-
-        public static Holiday YouthDay
-        {
-            get
-            {
-                if (youthDay == null)
-                {
-                    youthDay = new FixedHoliday("Youth Day", 6, 16);
-                }
-                return youthDay;
-            }
-        }
+        public static NamedDayInitializer YouthDay { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Youth Day", new FixedDayStrategy(Month.June, 16)));
 
         //9 August - National Woman's Day
-        private static Holiday nationalWomansDay;
-
-        public static Holiday NationalWomansDay
-        {
-            get
-            {
-                if (nationalWomansDay == null)
-                {
-                    nationalWomansDay = new FixedHoliday("National Woman's Day", 8, 9);
-                }
-                return nationalWomansDay;
-            }
-        }
+        public static NamedDayInitializer NationalWomansDay { get; } = new NamedDayInitializer(() =>
+            new NamedDay("National Woman's Day", new FixedDayStrategy(Month.August, 9)));
 
         //24 September - Heritage Day
-        private static Holiday heritageDay;
-
-        public static Holiday HeritageDay
-        {
-            get
-            {
-                if (heritageDay == null)
-                {
-                    heritageDay = new FixedHoliday("Heritage Day", 9, 24);
-                }
-                return heritageDay;
-            }
-        }
+        public static NamedDayInitializer HeritageDay { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Heritage Day", new FixedDayStrategy(Month.September, 24)));
 
         //16 December - Day of Reconciliation
-        private static Holiday dayOfReconciliation;
-
-        public static Holiday DayOfReconciliation
-        {
-            get
-            {
-                if (dayOfReconciliation == null)
-                {
-                    dayOfReconciliation = new FixedHoliday("Day of Reconciliation", 12, 16);
-                }
-                return dayOfReconciliation;
-            }
-        }
+        public static NamedDayInitializer DayOfReconciliation { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Day of Reconciliation", new FixedDayStrategy(Month.December, 16)));
 
         //26 December - Day of Goodwill
-        private static Holiday dayOfGoodwill;
-
-        public static Holiday DayOfGoodwill
-        {
-            get
-            {
-                if (dayOfGoodwill == null)
-                {
-                    dayOfGoodwill = new FixedHoliday("Day of Goodwill", 12, 26);
-                }
-                return dayOfGoodwill;
-            }
-        }
+        public static NamedDayInitializer DayOfGoodwill { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Day of Goodwill", new FixedDayStrategy(Month.December, 26)));
     }
 }

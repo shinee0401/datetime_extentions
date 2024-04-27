@@ -8,7 +8,7 @@ namespace DateTimeExtensions.Tests.HolidaysTranslations
     [TestFixture]
     public class GermanHolidayNamesTest
     {
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
             //setup a default culture
@@ -19,14 +19,30 @@ namespace DateTimeExtensions.Tests.HolidaysTranslations
         public void AssertGermanHolidaysAreTranslated()
         {
             //test holidays still on default culture (en-US)
-            Assert.AreEqual(DE_DEHolidayStrategy.GermanUnityDay.Name, "German Unity Day");
+            Assert.AreEqual(DE_DEHolidayStrategy.GermanUnityDay.Value.Name, "German Unity Day");
 
             new CultureInfo("de-DE").SetCurrentUICultureInfo();
             Assert.AreEqual("de-DE", CultureInfo.CurrentUICulture.Name);
 
-            Assert.AreEqual(DE_DEHolidayStrategy.GermanUnityDay.Name, "Tag der Deutschen Einheit");
+            Assert.AreEqual(DE_DEHolidayStrategy.GermanUnityDay.Value.Name, "Tag der Deutschen Einheit");
 
-            Assert.AreEqual(ChristianHolidays.Christmas.Name, "Weihnachten");
+            Assert.AreEqual(ChristianHolidays.Christmas.Value.Name, "Weihnachten");
+            Assert.AreEqual(GlobalHolidays.NewYear.Value.Name, "Neujahr");
+            Assert.AreEqual(ChristianHolidays.Epiphany.Value.Name, "Heilige Drei Könige");
+            Assert.AreEqual(ChristianHolidays.Carnival.Value.Name, "Fasching");
+            Assert.AreEqual(ChristianHolidays.AllSaints.Value.Name, "Allerheiligen");
+            Assert.AreEqual(ChristianHolidays.CorpusChristi.Value.Name, "Fronleichnam");
+            Assert.AreEqual(ChristianHolidays.Easter.Value.Name, "Ostern");
+            Assert.AreEqual(ChristianHolidays.GoodFriday.Value.Name, "Karfreitag");
+            Assert.AreEqual(ChristianHolidays.MaundyThursday.Value.Name, "Gründonnerstag");
+            Assert.AreEqual(ChristianHolidays.Assumption.Value.Name, "Maria Himmelfahrt");
+            Assert.AreEqual(ChristianHolidays.ImaculateConception.Value.Name, "Maria Empfängnis");
+            Assert.AreEqual(ChristianHolidays.Pentecost.Value.Name, "Pfingsten");
+            Assert.AreEqual(ChristianHolidays.PentecostMonday.Value.Name, "Pfingstmontag");
+            Assert.AreEqual(GlobalHolidays.InternationalWorkersDay.Value.Name, "Tag der Arbeit");
+            Assert.AreEqual(ChristianHolidays.Christmas.Name, "1. Weihnachtsfeiertag");
+            Assert.AreEqual(ChristianHolidays.StStephansDay.Name, "2. Weihnachtsfeiertag");
+            Assert.AreEqual(ChristianHolidays.Ascension.Name, "Christi Himmelfahrt");
             Assert.AreEqual(GlobalHolidays.NewYear.Name, "Neujahr");
             Assert.AreEqual(ChristianHolidays.Epiphany.Name, "Heilige Drei Könige");
             Assert.AreEqual(ChristianHolidays.Carnival.Name, "Fasching");

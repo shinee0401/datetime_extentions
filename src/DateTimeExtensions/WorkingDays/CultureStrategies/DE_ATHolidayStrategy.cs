@@ -1,4 +1,6 @@
-﻿using DateTimeExtensions.Common;
+﻿using System;
+using DateTimeExtensions.Common;
+using DateTimeExtensions.WorkingDays.OccurrencesCalculators;
 
 namespace DateTimeExtensions.WorkingDays.CultureStrategies
 {
@@ -7,9 +9,23 @@ namespace DateTimeExtensions.WorkingDays.CultureStrategies
     {
         public DE_ATHolidayStrategy()
         {
+            this.InnerCalendarDays.Add(new Holiday(GlobalHolidays.NewYear));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.Epiphany));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.GoodFriday));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.EasterMonday));
+            this.InnerCalendarDays.Add(new Holiday(GlobalHolidays.InternationalWorkersDay));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.Ascension));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.PentecostMonday));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.CorpusChristi));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.Assumption));
+            this.InnerCalendarDays.Add(new Holiday(AustrianNationalHoliday));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.AllSaints));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.ImaculateConception));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.Christmas));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.StStephansDay));
+            this.InnerCalendarDays.Add(new Holiday(GlobalHolidays.NewYearsEve));
             this.InnerHolidays.Add(GlobalHolidays.NewYear);
             this.InnerHolidays.Add(ChristianHolidays.Epiphany);
-            this.InnerHolidays.Add(ChristianHolidays.GoodFriday);
             this.InnerHolidays.Add(ChristianHolidays.EasterMonday);
             this.InnerHolidays.Add(GlobalHolidays.InternationalWorkersDay);
             this.InnerHolidays.Add(ChristianHolidays.Ascension);
@@ -37,5 +53,8 @@ namespace DateTimeExtensions.WorkingDays.CultureStrategies
                 return austrianNationalHoliday;
             }
         }
+            
+        public static NamedDayInitializer AustrianNationalHoliday { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Austrian National Holiday", new FixedDayStrategy(Month.October, 26)));
     }
 }

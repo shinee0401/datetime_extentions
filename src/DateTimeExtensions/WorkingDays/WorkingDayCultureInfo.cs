@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 
 // 
 // Copyright (c) 2011-2012, João Matos Silva <kappy@acydburne.com.pt>
@@ -49,7 +49,7 @@ namespace DateTimeExtensions.WorkingDays
 
         public bool IsHoliday(DateTime date)
         {
-            return holidayStrategy.IsHoliDay(date);
+            return holidayStrategy.IsHoliday(date);
         }
 
         public bool IsWorkingDay(DateTime date)
@@ -66,20 +66,19 @@ namespace DateTimeExtensions.WorkingDays
             return this.workingDayOfWeekStrategy.IsWorkingDay(dayOfWeek);
         }
 
-        public IEnumerable<Holiday> Holidays
+        public IEnumerable<CalendarDay> ObservedDays
         {
-            get { return this.holidayStrategy.Holidays; }
+            get { return this.holidayStrategy.Days; }
         }
 
-        public IEnumerable<Holiday> GetHolidaysOfYear(int year)
+        public IEnumerable<CalendarDay> GetObservationsOfYear(int year)
         {
-            return this.holidayStrategy.GetHolidaysOfYear(year);
+            return this.holidayStrategy.GetAllCalendarDaysOfYear(year);
         }
 
-        public string Name
-        {
-            get { return name; }
-        }
+        public string Name => name;
+
+        public string Region => region;
 
         private Func<string, string, IWorkingDayOfWeekStrategy> locateWorkingDayOfWeekStrategy;
 

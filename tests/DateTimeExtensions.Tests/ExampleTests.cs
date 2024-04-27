@@ -91,7 +91,7 @@ namespace DateTimeExtensions.Tests
         [Locale("CustomTest")]
         public class CustomHolidayStrategy : IHolidayStrategy
         {
-            public bool IsHoliDay(DateTime day)
+            public bool IsHoliday(DateTime day)
             {
                 if (day.Date == DateTime.Today)
                 {
@@ -100,12 +100,12 @@ namespace DateTimeExtensions.Tests
                 return false;
             }
 
-            public IEnumerable<Holiday> Holidays
+            public IEnumerable<CalendarDay> Days
             {
                 get { return null; }
             }
 
-            public IEnumerable<Holiday> GetHolidaysOfYear(int year)
+            public IEnumerable<CalendarDay> GetAllCalendarDaysOfYear(int year)
             {
                 return null;
             }
@@ -164,12 +164,12 @@ namespace DateTimeExtensions.Tests
                 }
             }
 
-            public IEnumerable<Holiday> Holidays
+            public IEnumerable<CalendarDay> ObservedDays
             {
                 get { return null; }
             }
 
-            public IEnumerable<Holiday> GetHolidaysOfYear(int year)
+            public IEnumerable<CalendarDay> GetObservationsOfYear(int year)
             {
                 return null;
             }
@@ -205,7 +205,7 @@ namespace DateTimeExtensions.Tests
             {
                 var holiday = holidays[holidayDate];
                 Assert.IsTrue(holidayDate.IsWorkingDay(portugalWorkingDayCultureInfo) == false,
-                    "holiday {0} shouln't be working day in Portugal", holiday.Name);
+                    "holiday {0} shouln't be working day in Portugal", holiday.Day.Name);
             }
         }
 
@@ -222,7 +222,7 @@ namespace DateTimeExtensions.Tests
             {
                 var holiday = holidays[holidayDate];
                 Assert.IsTrue(holidayDate.IsWorkingDay(portugalWorkingDayCultureInfo) == false,
-                    "holiday {0} shouln't be working day in Portugal", holiday.Name);
+                    "holiday {0} shouln't be working day in Portugal", holiday.Day.Name);
             }
         }
 
@@ -239,7 +239,7 @@ namespace DateTimeExtensions.Tests
             {
                 var holiday = holidays[holidayDate];
                 Assert.IsTrue(holidayDate.IsWorkingDay(usWorkingDayCultureInfo) == false,
-                    "holiday {0} shouln't be working day in US", holiday.Name);
+                    "holiday {0} shouln't be working day in US", holiday.Day.Name);
             }
 
         }

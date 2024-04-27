@@ -1,8 +1,8 @@
 ﻿#region License
 
-// 
+//
 // Copyright (c) 2011-2012, João Matos Silva <kappy@acydburne.com.pt>
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -14,7 +14,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-// 
+//
 
 #endregion
 
@@ -23,65 +23,34 @@ using DateTimeExtensions.Common;
 
 namespace DateTimeExtensions.WorkingDays.CultureStrategies
 {
+    using OccurrencesCalculators;
+
     [Locale("nl-BE")]
     public class NL_BEHolidayStrategy : HolidayStrategyBase, IHolidayStrategy
     {
         public NL_BEHolidayStrategy()
         {
-            this.InnerHolidays.Add(GlobalHolidays.NewYear);
-            this.InnerHolidays.Add(ChristianHolidays.Easter);
-            this.InnerHolidays.Add(ChristianHolidays.EasterMonday);
-            this.InnerHolidays.Add(LabourDay);
-            this.InnerHolidays.Add(ChristianHolidays.Ascension);
-            this.InnerHolidays.Add(ChristianHolidays.Pentecost);
-            this.InnerHolidays.Add(ChristianHolidays.PentecostMonday);
-            this.InnerHolidays.Add(NationalHoliday);
-            this.InnerHolidays.Add(ChristianHolidays.Assumption);
-            this.InnerHolidays.Add(ChristianHolidays.AllSaints);
-            this.InnerHolidays.Add(Armistice);
-            this.InnerHolidays.Add(ChristianHolidays.Christmas);
+            this.InnerCalendarDays.Add(new Holiday(GlobalHolidays.NewYear));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.Easter));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.EasterMonday));
+            this.InnerCalendarDays.Add(new Holiday(LabourDay));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.Ascension));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.Pentecost));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.PentecostMonday));
+            this.InnerCalendarDays.Add(new Holiday(NationalHoliday));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.Assumption));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.AllSaints));
+            this.InnerCalendarDays.Add(new Holiday(Armistice));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.Christmas));
         }
 
-        private static Holiday labourDay;
+        public static NamedDayInitializer LabourDay { get; } = new NamedDayInitializer(() =>
+            new NamedDay("LabourDay", new FixedDayStrategy(Month.May, 1)));
 
-        public static Holiday LabourDay
-        {
-            get
-            {
-                if (labourDay == null)
-                {
-                    labourDay = new FixedHoliday("LabourDay", 5,1);
-                }
-                return labourDay;
-            }
-        }
+        public static NamedDayInitializer NationalHoliday { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Belgium_NationalHoliday", new FixedDayStrategy(Month.July, 21)));
 
-        private static Holiday nationalHoliday;
-
-        public static Holiday NationalHoliday
-        {
-            get
-            {
-                if (nationalHoliday == null)
-                {
-                    nationalHoliday = new FixedHoliday("Belgium_NationalHoliday", 7, 21);
-                }
-                return nationalHoliday;
-            }
-        }
-
-        private static Holiday armistice;
-
-        public static Holiday Armistice
-        {
-            get
-            {
-                if (armistice == null)
-                {
-                    armistice = new FixedHoliday("Armistice", 11, 11);
-                }
-                return armistice;
-            }
-        }
+        public static NamedDayInitializer Armistice { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Armistice", new FixedDayStrategy(Month.November, 11)));
     }
 }

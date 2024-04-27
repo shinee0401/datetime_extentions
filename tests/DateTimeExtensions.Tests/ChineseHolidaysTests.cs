@@ -12,9 +12,9 @@ namespace DateTimeExtensions.Tests
     public class ChineseHolidaysTests
     {
         [Test]
-        public void SpringFetivalTests()
+        public void SpringFestivalTests()
         {
-            var springFestivalHoliday = ChineseHolidayStrategy.SpringFestival;
+            var springFestivalHoliday = ChineseHolidayStrategy.SpringFestival.Value;
 
             var observanceIn2015 = springFestivalHoliday.GetInstance(2015);
             Assert.AreEqual(new DateTime(2015, 2, 19), observanceIn2015);
@@ -29,7 +29,7 @@ namespace DateTimeExtensions.Tests
         [Test]
         public void TombSweepingDayTests()
         {
-            var tombSweepingDayHoliday = ChineseHolidayStrategy.TombSweepingDay;
+            var tombSweepingDayHoliday = ChineseHolidayStrategy.TombSweepingDay.Value;
 
             var observanceIn2015 = tombSweepingDayHoliday.GetInstance(2015);
             Assert.AreEqual(new DateTime(2015, 4, 5), observanceIn2015);
@@ -45,7 +45,7 @@ namespace DateTimeExtensions.Tests
         {
             var cultureInfo = new WorkingDayCultureInfo("zh-CN");
             Assert.IsNotNull(cultureInfo);
-            var holidays = cultureInfo.GetHolidaysOfYear(2016);
+            var holidays = cultureInfo.GetObservationsOfYear(2016);
             Assert.AreEqual(7, holidays.Count());
         }
     }

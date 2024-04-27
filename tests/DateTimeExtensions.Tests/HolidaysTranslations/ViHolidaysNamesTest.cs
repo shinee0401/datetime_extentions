@@ -8,7 +8,7 @@ namespace DateTimeExtensions.Tests.HolidaysTranslations
     [TestFixture]
     public class ViHolidaysNamesTest
     {
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
             new CultureInfo("vi-VN").SetCurrentUICultureInfo();
@@ -17,11 +17,11 @@ namespace DateTimeExtensions.Tests.HolidaysTranslations
         [Test]
         public void AssertVietNamHolidaysAreTranslated()
         {
-            StringAssert.AreEqualIgnoringCase("Quốc khánh", ViVNHolidayStrategy.NationalDay.Name);
-            StringAssert.AreEqualIgnoringCase("Ngày Giải phóng miền Nam thống nhất đất nước", ViVNHolidayStrategy.LiberationDay.Name);
-            StringAssert.AreEqualIgnoringCase("Ngày Quốc tế Lao động", ViVNHolidayStrategy.InternationalWorkersDay.Name);
-            StringAssert.AreEqualIgnoringCase("Giỗ tổ Hùng Vương", ViVNHolidayStrategy.HungKingsCommemorations.Name);
-            StringAssert.AreEqualIgnoringCase("tết tây", ViVNHolidayStrategy.NewYear.Name);
+            StringAssert.AreEqualIgnoringCase("Quốc khánh", ViVNHolidayStrategy.NationalDay.Value.Name);
+            StringAssert.AreEqualIgnoringCase("Ngày Giải phóng miền Nam thống nhất đất nước", ViVNHolidayStrategy.LiberationDay.Value.Name);
+            StringAssert.AreEqualIgnoringCase("Ngày Quốc tế Lao động", GlobalHolidays.InternationalWorkersDay.Value.Name);
+            StringAssert.AreEqualIgnoringCase("Giỗ tổ Hùng Vương", ViVNHolidayStrategy.HungKingsCommemorations.Value.Name);
+            StringAssert.AreEqualIgnoringCase("tết tây", GlobalHolidays.NewYear.Value.Name);
         }
     }
 }

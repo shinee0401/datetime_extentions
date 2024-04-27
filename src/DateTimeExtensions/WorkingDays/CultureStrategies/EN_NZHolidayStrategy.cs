@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DateTimeExtensions.Common;
+using DateTimeExtensions.WorkingDays.OccurrencesCalculators;
 
 namespace DateTimeExtensions.WorkingDays.CultureStrategies
 {
@@ -10,160 +11,111 @@ namespace DateTimeExtensions.WorkingDays.CultureStrategies
     public class EN_NZHolidayStrategy : HolidayStrategyBase, IHolidayStrategy
     {
         // Rules / Dates sourced from
-        //		http://www.dol.govt.nz/er/holidaysandleave/publicholidays/publicholidaydates/future-dates.asp
+        //		https://www.employment.govt.nz/leave-and-holidays/public-holidays/public-holidays-and-anniversary-dates/
         //		http://www.whatdate.co.nz/
 
         public EN_NZHolidayStrategy()
         {
-            this.InnerHolidays.Add(GlobalHolidays.NewYear);
-            this.InnerHolidays.Add(DayAfterNewYear);
-            this.InnerHolidays.Add(WaitangiDay);
-            this.InnerHolidays.Add(ChristianHolidays.GoodFriday);
-            this.InnerHolidays.Add(ChristianHolidays.Easter);
-            this.InnerHolidays.Add(ChristianHolidays.EasterMonday);
-            this.InnerHolidays.Add(AnzacDay);
-            this.InnerHolidays.Add(QueensBirthday);
-            this.InnerHolidays.Add(LabourDay);
-            this.InnerHolidays.Add(ChristianHolidays.Christmas);
-            this.InnerHolidays.Add(GlobalHolidays.BoxingDay);
+            this.InnerCalendarDays.Add(new Holiday(GlobalHolidays.NewYear));
+            this.InnerCalendarDays.Add(new Holiday(DayAfterNewYear));
+            this.InnerCalendarDays.Add(new Holiday(WaitangiDay));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.GoodFriday));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.Easter));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.EasterMonday));
+            this.InnerCalendarDays.Add(new Holiday(AnzacDay));
+            this.InnerCalendarDays.Add(new Holiday(QueensBirthday));
+            this.InnerCalendarDays.Add(new Holiday(LabourDay));
+            this.InnerCalendarDays.Add(new Holiday(ChristianHolidays.Christmas));
+            this.InnerCalendarDays.Add(new Holiday(GlobalHolidays.BoxingDay));
         }
 
-        protected override IDictionary<DateTime, Holiday> BuildObservancesMap(int year)
+        //Before refactoring, Credit to David Smith
+        protected override IEnumerable<KeyValuePair<DateTime, CalendarDay>> GetYearObservances(int year)
         {
-            IDictionary<DateTime, Holiday> holidayMap = new Dictionary<DateTime, Holiday>();
-            foreach (var innerHoliday in InnerHolidays)
+            foreach (var calendarDay in InnerCalendarDays)
             {
-                var date = innerHoliday.GetInstance(year);
-                if (date.HasValue)
+                var date = calendarDay.Day.GetInstance(year);
+                if (date == null)
                 {
-                    holidayMap.Add(date.Value, innerHoliday);
+                    continue;
+                }
+                
+                yield return new KeyValuePair<DateTime, CalendarDay>(date.Value, calendarDay);
 
-                    // New Year, Day After New Year, Christmas and Boxing Days are 'Mondayised'
-                    // ie if these dates fall on a weekday then they are observed on the actual day.
-                    // If they fall on a weekend then they are observed on the following Monday/Tuesday
-
-                    if (IsMondayised(innerHoliday, date.Value.DayOfWeek))
+                // New Year, Day After New Year, Christmas and Boxing Days are 'Mondayised'
+                // ie if these dates fall on a weekday then they are observed on the actual day.
+                // If they fall on a weekend then they are observed on the following Monday/Tuesday
+                if (IsMondayised(calendarDay, date.Value.DayOfWeek))
+                {
+                    var observation = new Holiday(new NamedDay(
+                        calendarDay.Day.Name + " Observed", 
+                        new NthDayOfWeekAfterDayStrategy(1, DayOfWeek.Monday, new NamedDayStrategy(calendarDay.Day))));
+                    var observedInstance = observation.Day.GetInstance(year);
+                    if (observedInstance != null)
                     {
-                        var observation = new NthDayOfWeekAfterDayHoliday(innerHoliday.Name + " Observed", 1,
-                            DayOfWeek.Monday, innerHoliday);
-                        var observedIntance = observation.GetInstance(year);
-                        if (observedIntance != null)
-                        {
-                            holidayMap.Add(observedIntance.Value, observation);
-                        }
+                        yield return new KeyValuePair<DateTime, CalendarDay>(
+                            observedInstance.Value,
+                            observation);
                     }
-                    if (IsTuesdayised(innerHoliday, date.Value.DayOfWeek))
+                }
+                else if (IsTuesdayised(calendarDay, date.Value.DayOfWeek))
+                {
+                    var observation = new Holiday(new NamedDay(
+                        calendarDay.Day.Name + " Observed", 
+                        new NthDayOfWeekAfterDayStrategy(1, DayOfWeek.Tuesday, new NamedDayStrategy(calendarDay.Day))));
+                    var observedInstance = observation.Day.GetInstance(year);
+                    if (observedInstance != null)
                     {
-                        var observation = new NthDayOfWeekAfterDayHoliday(innerHoliday.Name + " Observed", 1,
-                            DayOfWeek.Tuesday, innerHoliday);
-                        var observedIntance = observation.GetInstance(year);
-                        if (observedIntance != null)
-                        {
-                            holidayMap.Add(observedIntance.Value, observation);
-                        }
+                        yield return new KeyValuePair<DateTime, CalendarDay>(
+                            observedInstance.Value,
+                            observation);
                     }
                 }
             }
-            return holidayMap;
         }
 
-
-        private static bool IsMondayised(Holiday holiday, DayOfWeek occurenceDay)
+        //TODO: improve this to be more behavioral instead of conjuntction of ors and ands
+        private static bool IsMondayised(CalendarDay holiday, DayOfWeek occurenceDay)
         {
             return
-                (holiday.Equals(GlobalHolidays.NewYear) && occurenceDay == DayOfWeek.Saturday) ||
-                (holiday.Equals(DayAfterNewYear) && occurenceDay == DayOfWeek.Saturday) ||
-                (holiday.Equals(ChristianHolidays.Christmas) && occurenceDay == DayOfWeek.Saturday) ||
-                (holiday.Equals(GlobalHolidays.BoxingDay) && occurenceDay == DayOfWeek.Saturday);
+                (holiday.Day == GlobalHolidays.NewYear && occurenceDay == DayOfWeek.Saturday) ||
+                (holiday.Day == DayAfterNewYear && occurenceDay == DayOfWeek.Saturday) ||
+                (holiday.Day == ChristianHolidays.Christmas && occurenceDay == DayOfWeek.Saturday) ||
+                (holiday.Day == GlobalHolidays.BoxingDay && occurenceDay == DayOfWeek.Saturday);
         }
 
-        private static bool IsTuesdayised(Holiday holiday, DayOfWeek occurenceDay)
+        private static bool IsTuesdayised(CalendarDay holiday, DayOfWeek occurenceDay)
         {
             return
-                (holiday.Equals(GlobalHolidays.NewYear) && occurenceDay == DayOfWeek.Sunday) ||
-                (holiday.Equals(DayAfterNewYear) && occurenceDay == DayOfWeek.Sunday) ||
-                (holiday.Equals(ChristianHolidays.Christmas) && occurenceDay == DayOfWeek.Sunday) ||
-                (holiday.Equals(GlobalHolidays.BoxingDay) && occurenceDay == DayOfWeek.Sunday);
+                (holiday.Day == GlobalHolidays.NewYear && occurenceDay == DayOfWeek.Sunday) ||
+                (holiday.Day == DayAfterNewYear && occurenceDay == DayOfWeek.Sunday) ||
+                (holiday.Day == ChristianHolidays.Christmas && occurenceDay == DayOfWeek.Sunday) ||
+                (holiday.Day == GlobalHolidays.BoxingDay && occurenceDay == DayOfWeek.Sunday);
         }
 
 
         // 2nd Janurary - Day after New Year's Day
-        private static Holiday dayAfterNewYear;
-
-        public static Holiday DayAfterNewYear
-        {
-            get
-            {
-                if (dayAfterNewYear == null)
-                {
-                    dayAfterNewYear = new FixedHoliday("Day after New Year's Day", 1, 2);
-                }
-                return dayAfterNewYear;
-            }
-        }
+        public static NamedDayInitializer DayAfterNewYear { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Day after New Year's Day", new FixedDayStrategy(Month.January, 2)));
 
         // 6th Feburary - Waitangi Day
-        private static Holiday waitangiDay;
-
-        public static Holiday WaitangiDay
-        {
-            get
-            {
-                if (waitangiDay == null)
-                {
-                    waitangiDay = new FixedHoliday("Waitangi Day", 2, 6);
-                }
-                return waitangiDay;
-            }
-        }
+        public static NamedDayInitializer WaitangiDay { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Waitangi Day", new FixedDayStrategy(Month.February, 6)));
 
         // 25th April - Anzac Day
-        private static Holiday anzacDay;
-
-        public static Holiday AnzacDay
-        {
-            get
-            {
-                if (anzacDay == null)
-                {
-                    anzacDay = new FixedHoliday("Anzac Day", 4, 25);
-                }
-                return anzacDay;
-            }
-        }
+        public static NamedDayInitializer AnzacDay { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Anzac Day", new FixedDayStrategy(Month.April, 25)));
 
         // 1st Monday in June - Queen's Birthday
-        private static Holiday queensBirthday;
-
-        public static Holiday QueensBirthday
-        {
-            get
-            {
-                if (queensBirthday == null)
-                {
-                    queensBirthday = new NthDayOfWeekInMonthHoliday("Queen's Birthday", 1, DayOfWeek.Monday, 6,
-                        CountDirection.FromFirst);
-                }
-                return queensBirthday;
-            }
-        }
-
+        public static NamedDayInitializer QueensBirthday { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Queen's Birthday", new NthDayOfWeekInMonthDayStrategy(1, DayOfWeek.Monday, Month.July, 
+                CountDirection.FromFirst)));
+        
         // 4th Monday in October - Labour Day
-        private static Holiday labourDay;
-
-        public static Holiday LabourDay
-        {
-            get
-            {
-                if (labourDay == null)
-                {
-                    labourDay = new NthDayOfWeekInMonthHoliday("Labour Day", 4, DayOfWeek.Monday, 10,
-                        CountDirection.FromFirst);
-                }
-                return labourDay;
-            }
-        }
-
+        public static NamedDayInitializer LabourDay { get; } = new NamedDayInitializer(() =>
+            new NamedDay("Labour Day", new NthDayOfWeekInMonthDayStrategy(1, DayOfWeek.Monday, Month.October, 
+                CountDirection.FromFirst)));
+        
         // Todo: Regional Holidays
     }
 }
